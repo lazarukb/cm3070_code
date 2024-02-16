@@ -51,9 +51,10 @@ class Population():
         for i in range(self.get_population_size()):
             total_fitness += self.get_nn_fitness(i)
             self.fitness_map.append(total_fitness)
+            print(f"Fitness of network {i} is reported as {self.get_nn_fitness(i)}")
         # print("Leaving the method, it has a length of " + str(len(self.fitness_map)) + ", last value is " + str(self.fitness_map[len(self.fitness_map) - 1]))
         # print("Created a fitness map")
-        # print(self.fitness_map)
+        print(f"Finished, this population's network map is {self.fitness_map}")
     
     '''Return the fitness map for this population'''
     def get_fitness_map(self):

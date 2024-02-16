@@ -23,15 +23,15 @@ class TestGeneticAlgorithm(unittest.TestCase):
     # Code derived, but also fully re-typed and edited, from that presented in lectures in CM3020
     def testGeneticAlgorithm(self):
         # Define the population, simulation, and evolution parameters
-        experiment_number = 0
+        experiment_number = 1
         # This is also written as a folder in the experiment folder for quick 
         #   reference, so keep it short.
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
         generations = 5
-        size_new_generations = 2
-        max_population_size = 4
+        size_new_generations = 5
+        max_population_size = 7
         point_mutation_chance = 0.3
         point_mutation_amount = 0.35
         shrink_mutation_chance = 0.25
@@ -45,7 +45,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         # Number of steps to be saved to the input tensor directly affects the inputs to the nn.
         # So the inputs needs to be removed from the base genome as it's variable now.
         # And the size of the inputs will be steps * 7 (one for each action, + the choice + the result) + the current action space of 5.
-        steps_to_retain = 6
+        steps_to_retain = 10
         inputs_size = (steps_to_retain * 7) + 5
         
         # possibly mod this to read experiments from a CSV and then iterate through them.
@@ -403,7 +403,15 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # print(child_network_weights_bias)
                 # print(child_network_output_weights_bias)
                 # child_nn_obj = population.Population.create_nn(self, serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
-                child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
+                
+                # This was wrong. It was storing the number of the parent from the population object, not the serial number of the parent.
+                # child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
+                
+                parent_1_sn = parent_1_nn_definition['meta']['serial_number']
+                parent_2_sn = parent_2_nn_definition['meta']['serial_number']
+                
+                # print(f"\n\np1 number: {parent_1}, p1_sn: {parent_1_sn}, p2 number: {parent_2}, p2_sn: {parent_2_sn}\n\n")
+                child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1_sn, parent_2_sn)
                 
                 # Do some assertions to confirm that the child nn is properly defined and populated
                 # self.assertIsInstance(child_nn_obj.get_network_dna()["meta"]["serial_number"], serial_number)

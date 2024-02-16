@@ -144,7 +144,7 @@ class Simulation(unittest.TestCase):
             
             # nn_input_tensor = keras.backend.constant([action_space_values])
             nn_input_tensor = keras.backend.constant([final_input])
-            print(f"{nn_input_tensor}, {nn_input_tensor.shape}")
+            # print(f"{nn_input_tensor}, {nn_input_tensor.shape}")
             
             # Here, the network is fed the inputs and returns the probabilities for each of the action space choices.
             nn_outputs = nn_obj(nn_input_tensor)

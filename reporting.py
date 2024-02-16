@@ -1,5 +1,6 @@
 import population
 import os
+import shutil
 
 class Reporting():
     
@@ -28,6 +29,15 @@ class Reporting():
         if subdir == 0:
             return
         # Make the report directory
+        
+        if subdir == 1:
+            # remove the subdir and contents as this is the testing directory
+            # intended for when the output should be created, not not retained.
+            try:
+                shutil.rmtree("experiments/" + str(subdir))
+            except:
+                pass
+            
         try:
             os.mkdir("experiments/" + str(subdir))
             os.mkdir("experiments/" + str(subdir) + "/!-- " + str(comment))
@@ -66,7 +76,7 @@ class Reporting():
                 for key in report['initial_population'][nn][0]['meta']:
                     f.write(f"{report['initial_population'][nn][0]['meta'][key]},")
                 # f.write(f"{report['initial_population'][nn][0]['meta']},")
-                f.write(f"{report['initial_population'][nn][0]['input']},")
+                f.write(f"{report['initial_population'][nn][0]['inputs']},")
                 for key in report['initial_population'][nn][0]['hidden_layers'][0]:
                     f.write(f"{report['initial_population'][nn][0]['hidden_layers'][0][key]},")
                 # f.write(f"{report['initial_population'][nn][0]['hidden_layers']},")
@@ -87,7 +97,7 @@ class Reporting():
                     for key in report['generations'][gen]['after_evaluation'][nn][0]['meta']:
                         f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['meta'][key]},")
                 
-                    f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['input']},")
+                    f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['inputs']},")
                     for key in report['generations'][gen]['after_evaluation'][nn][0]['hidden_layers'][0]:
                         f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['hidden_layers'][0][key]},")
                     for key in report['generations'][gen]['after_evaluation'][nn][0]['output']:
@@ -104,7 +114,7 @@ class Reporting():
                     for key in report['generations'][gen]['after_carryover'][nn][0]['meta']:
                         f.write(f"{report['generations'][gen]['after_carryover'][nn][0]['meta'][key]},")
                 
-                    f.write(f"{report['generations'][gen]['after_carryover'][nn][0]['input']},")
+                    f.write(f"{report['generations'][gen]['after_carryover'][nn][0]['inputs']},")
                     for key in report['generations'][gen]['after_carryover'][nn][0]['hidden_layers'][0]:
                         f.write(f"{report['generations'][gen]['after_carryover'][nn][0]['hidden_layers'][0][key]},")
                     for key in report['generations'][gen]['after_carryover'][nn][0]['output']:

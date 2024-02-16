@@ -17,7 +17,8 @@ class Reporting():
         
         # each network's meta data, and fitness
         for i in range(population_size):
-            nn_meta = population.Population.get_neural_network_def(sim_population, i)
+            # nn_meta = population.Population.get_neural_network_def(sim_population, i)
+            nn_meta = sim_population.get_neural_network_def(i)
             nn_fitness = sim_population.get_nn_fitness(i)
             results.append([nn_meta, nn_fitness])
         return results

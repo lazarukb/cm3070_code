@@ -162,8 +162,10 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # print(f"Parent definitions: \n{population.Population.get_neural_network_def(sim_population, parent_1)}, \n{population.Population.get_neural_network_def(sim_population, parent_2)}")
             
                 # Get the parental network definitions for future use               
-                parent_1_nn_definition = population.Population.get_neural_network_def(sim_population, parent_1)
-                parent_2_nn_definition = population.Population.get_neural_network_def(sim_population, parent_2)
+                # parent_1_nn_definition = population.Population.get_neural_network_def(sim_population, parent_1)
+                # parent_2_nn_definition = population.Population.get_neural_network_def(sim_population, parent_2)
+                parent_1_nn_definition = sim_population.get_neural_network_def(parent_1)
+                parent_2_nn_definition = sim_population.get_neural_network_def(parent_2)
                 self.assertIsInstance(parent_1_nn_definition, dict)
                 self.assertIsInstance(parent_2_nn_definition, dict)
                 
@@ -467,7 +469,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
                     # nn_to_import = population.Population.get_neural_network_def(sim_population, i)
                     
                     import_nn_definition = {}
-                    import_nn_definition = population.Population.get_neural_network_def(sim_population, most_fit_networks_desc[i])
+                    # import_nn_definition = population.Population.get_neural_network_def(sim_population, most_fit_networks_desc[i])
+                    import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
                     self.assertIsInstance(import_nn_definition, dict)
                     # print(f"Serial number of network index {i} is {import_nn_definition['meta']['serial_number']}.")
                     # print(f"Checksum of network index {i} is {import_nn_definition['meta']['checksum']}.")
@@ -533,13 +536,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 
                 # for new_nn in range(population.Population.get_population_size(new_population)):
                 for new_nn in range(new_population.get_population_size()):
-                    new_nn_sn = population.Population.get_neural_network_def(new_population, new_nn)['meta']['serial_number']
+                    # new_nn_sn = population.Population.get_neural_network_def(new_population, new_nn)['meta']['serial_number']
+                    new_nn_sn = new_population.get_neural_network_def(new_nn)['meta']['serial_number']
                     # for old_nn in range(population.Population.get_population_size(sim_population)):
                     for old_nn in range(sim_population.get_population_size()):
                         old_nn_sn = population.Population.get_neural_network_def(sim_population, old_nn)['meta']['serial_number']
                         if old_nn_sn == new_nn_sn:
-                            new_nn_checksum = population.Population.get_neural_network_def(new_population, new_nn)['meta']['checksum']
-                            old_nn_checksum = population.Population.get_neural_network_def(sim_population, old_nn)['meta']['checksum']
+                            # new_nn_checksum = population.Population.get_neural_network_def(new_population, new_nn)['meta']['checksum']
+                            # old_nn_checksum = population.Population.get_neural_network_def(sim_population, old_nn)['meta']['checksum']
+                            new_nn_checksum = new_population.get_neural_network_def(new_nn)['meta']['checksum']
+                            old_nn_checksum = sim_population.get_neural_network_def(old_nn)['meta']['checksum']
                             # print(f"Matching SN {old_nn_sn} == {new_nn_sn}. ", end = "")
                             # print(f"Checksum old {old_nn_checksum}, checksum new {new_nn_checksum}. ")
                             self.assertEqual(new_nn_checksum, old_nn_checksum)

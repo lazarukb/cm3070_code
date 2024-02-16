@@ -24,7 +24,7 @@ class Population():
         return len(self.networks)
     
     '''Return the specified neural network from the population'''
-    @staticmethod
+    # @staticmethod
     def get_neural_network_def(self, network_id):
         return (self.networks[network_id].get_network_dna())
     

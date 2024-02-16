@@ -29,11 +29,11 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 5
-        size_new_generations = 5
-        max_population_size = 7
-        point_mutation_chance = 0.3
-        point_mutation_amount = 0.35
+        generations = 10
+        size_new_generations = 50
+        max_population_size = 55
+        point_mutation_chance = 0.1
+        point_mutation_amount = 0.05
         shrink_mutation_chance = 0.25
         growth_mutation_chance = 0.25
         force_random_choice = False
@@ -45,7 +45,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         # Number of steps to be saved to the input tensor directly affects the inputs to the nn.
         # So the inputs needs to be removed from the base genome as it's variable now.
         # And the size of the inputs will be steps * 7 (one for each action, + the choice + the result) + the current action space of 5.
-        steps_to_retain = 10
+        steps_to_retain = 2
         inputs_size = (steps_to_retain * 7) + 5
         
         # possibly mod this to read experiments from a CSV and then iterate through them.

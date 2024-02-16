@@ -12,7 +12,8 @@ class Reporting():
     def census(sim_population):
         # Gathers and returns the stats of a population
         results = []
-        population_size = population.Population.get_population_size(sim_population)
+        # population_size = population.Population.get_population_size(sim_population)
+        population_size = sim_population.get_population_size()
         
         # each network's meta data, and fitness
         for i in range(population_size):

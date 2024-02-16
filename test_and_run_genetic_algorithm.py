@@ -8,6 +8,9 @@ import numpy as np
 import reporting
 from operator import itemgetter
 
+# So this is the main test-and-run ... all the unittesting stays in here.  Remove from elsewhere.
+
+
 # To remove unittest, if eventually decided ...
 # Make sure the files are open (maybe, but just to be sure)
 # Remove the unittest.TestCase argument and unittest.main() (if exists) calls from the module
@@ -20,15 +23,15 @@ class TestGeneticAlgorithm(unittest.TestCase):
     # Code derived, but also fully re-typed and edited, from that presented in lectures in CM3020
     def testGeneticAlgorithm(self):
         # Define the population, simulation, and evolution parameters
-        experiment_number = 307
+        experiment_number = 0
         # This is also written as a folder in the experiment folder for quick 
         #   reference, so keep it short.
-        experiment_comment = "fixed step scores 1 - each new generation should retain all of the original"
-        serial_number = 307
+        experiment_comment = "development - no experiment being saved"
+        serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 100
-        size_new_generations = 20
-        max_population_size = 40
+        generations = 5
+        size_new_generations = 2
+        max_population_size = 4
         point_mutation_chance = 0.3
         point_mutation_amount = 0.35
         shrink_mutation_chance = 0.25
@@ -39,6 +42,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_results = []
         game = 'coin_collector_5'
         
+        # possibly mod this to read experiments from a CSV and then iterate through them.
+        # LAST
+               
         # helpers_utest.TestHelpers.testVerifyParameters(self)
         
         # Early test of the directory structure to ensure nothing is overwritten.
@@ -51,7 +57,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
         self.assertIsInstance(sim_population, population.Population)
-        self.assertEqual(population.Population.get_population_size(sim_population), size_new_generations)
+        # self.assertEqual(population.Population.get_population_size(sim_population), size_new_generations)
+        self.assertEqual(sim_population.get_population_size(), size_new_generations)
         
         # Document the initial state
         experiment_report['parameters'] = {
@@ -430,7 +437,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # But cap at the number of networks in the old generation.
                 
                 print(f"\nProduce carryover from the old generation to the new. ", end = "")
-                size_prev_gen = population.Population.get_population_size(sim_population)
+                # size_prev_gen = population.Population.get_population_size(sim_population)
+                size_prev_gen = sim_population.get_population_size()
                 carryover_count = max_population_size - size_new_generations
                 carryover_count = min(carryover_count, size_prev_gen)
                 print(f"{carryover_count} networks from the old generation will import to the new generation.")
@@ -516,16 +524,18 @@ class TestGeneticAlgorithm(unittest.TestCase):
                            
                        
             # print(f"\nFinal view of the population.")
-            for i in range(new_population.get_population_size(new_population)):
+            for i in range(new_population.get_population_size()):
                 # print(f"{i}: {type(new_population.get_neural_network_model(i))}. ", end = "")
                 # print(f"Serial Number: {population.Population.get_neural_network_def(new_population, i)['meta']['serial_number']}. ", end = "")
                 # print(f"Checksum: {population.Population.get_neural_network_def(new_population, i)['meta']['checksum']}. ", end = "")
                 
                 # Let's make sure that any network with the same serial number in the old pop and the new also has the same checksum. Really they must.
                 
-                for new_nn in range(population.Population.get_population_size(new_population)):
+                # for new_nn in range(population.Population.get_population_size(new_population)):
+                for new_nn in range(new_population.get_population_size()):
                     new_nn_sn = population.Population.get_neural_network_def(new_population, new_nn)['meta']['serial_number']
-                    for old_nn in range(population.Population.get_population_size(sim_population)):
+                    # for old_nn in range(population.Population.get_population_size(sim_population)):
+                    for old_nn in range(sim_population.get_population_size()):
                         old_nn_sn = population.Population.get_neural_network_def(sim_population, old_nn)['meta']['serial_number']
                         if old_nn_sn == new_nn_sn:
                             new_nn_checksum = population.Population.get_neural_network_def(new_population, new_nn)['meta']['checksum']
@@ -660,7 +670,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             
             
-            
+# Run
         
 unittest.main()
 

@@ -19,7 +19,7 @@ class Population():
         # self.assertEqual(population_size, self.get_population_size(self))
     
     '''Returns the number of neural networks in the population'''
-    @staticmethod
+    # @staticmethod
     def get_population_size(self):
         return len(self.networks)
     
@@ -48,7 +48,7 @@ class Population():
         if len(self.fitness_map) > 0:
             self.fitness_map = []
             # print("Should be reset now, it has a length of " + str(len(self.fitness_map)) + ", last value is " + str(self.fitness_map[len(self.fitness_map) - 1]))
-        for i in range(self.get_population_size(self)):
+        for i in range(self.get_population_size()):
             total_fitness += self.get_nn_fitness(i)
             self.fitness_map.append(total_fitness)
         # print("Leaving the method, it has a length of " + str(len(self.fitness_map)) + ", last value is " + str(self.fitness_map[len(self.fitness_map) - 1]))

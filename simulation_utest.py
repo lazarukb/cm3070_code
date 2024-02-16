@@ -306,7 +306,8 @@ class Simulation(unittest.TestCase):
         
         # When this is called, the population of Network objects already exists as sim_population, which is a Population instance
         # Get the number of networks in the population
-        networks_count = population.Population.get_population_size(sim_population)
+        # networks_count = population.Population.get_population_size(sim_population)
+        networks_count = sim_population.get_population_size()
         # print(f"Evaluating networks ", end = "")
         for i in range(networks_count):
             # Get the Keras model from the Network object

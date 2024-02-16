@@ -44,8 +44,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Number of steps to be saved to the input tensor directly affects the inputs to the nn.
         # So the inputs needs to be removed from the base genome as it's variable now.
-        
-        
+        # And the size of the inputs will be steps * 7 (one for each action, + the choice + the result) + the current action space of 5.
+        steps_to_retain = 6
+        inputs_size = (steps_to_retain * 7) + 5
         
         # possibly mod this to read experiments from a CSV and then iterate through them.
         # LAST
@@ -57,7 +58,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Create the initial population of randomised neural network definitions
         sim_population = population.Population()
-        sim_population.test_create_random_population(size_new_generations, serial_number)
+        sim_population.test_create_random_population(size_new_generations, serial_number, inputs_size)
         serial_number += size_new_generations
         
         # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
@@ -98,7 +99,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # run the networks through the game, which modifies the components of the simulation_population object
             ############################## WAIT, WHAT IS THIS MAX STEPS?
-            sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup)
+            sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup, steps_to_retain)
             
             # Capture the state of the population with fitnesses after they've gone through the evaluation
             experiment_results['after_evaluation'] = reporting.Reporting.census(sim_population)

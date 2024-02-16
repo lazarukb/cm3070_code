@@ -18,14 +18,15 @@ class Network:
         # self.dna = {}
     
     '''Create a random network from the genome'''
-    def create_random_network_dna(self, serial_number, hidden_layers_count = 1):
+    def create_random_network_dna(self, serial_number, inputs_size, hidden_layers_count = 1):
         self.dna = genome.Genome.create_random_genome(self.specification, hidden_layers_count)
         # print(f"network.create_random_genome: {self.dna}")
         # genome = {}
         # genome = genome.Genome.create_random_genome(self.specification, hidden_layers_count)
         # self.dna = deepcopy(genome)
         self.dna["meta"]["serial_number"] = serial_number
-        # self.dna["input"]
+        self.dna["inputs"] = inputs_size
+        # print(f"from network, create_random_network_dna, inputs: {self.dna['inputs']}")
         self.weights = []
     
     '''Return the components of this network in addressable DICT format'''

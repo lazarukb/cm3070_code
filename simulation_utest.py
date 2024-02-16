@@ -44,7 +44,7 @@ class Simulation(unittest.TestCase):
         self.assertIsInstance(environment_id, str)
         return environment_id, max_steps
       
-    def apply_nn_to_textworld(self, nn_obj, game, force_random_choice, force_pickup):
+    def apply_nn_to_textworld(self, nn_obj, game, force_random_choice, force_pickup, steps_to_retain):
         environment_id, max_steps = self.registerEnvId(game, self.env_parameters)
         environment = textworld.gym.make(environment_id)
         obs, infos = environment.reset()
@@ -82,10 +82,12 @@ class Simulation(unittest.TestCase):
         # print(obs)
         
         # Setup the previous to zeroes and the current space will be prepended. So total inputs will equal steps * 7 + 5.
-        steps_to_retain = 5
+        # steps_to_retain = 5
         previous_action_spaces_and_choices = []
         for i in range(steps_to_retain):
             previous_action_spaces_and_choices.append([0, 0, 0, 0, 0, 0, 0])
+            
+        # self.assertEqual(len(previous_action_spaces_and_choices), steps_to_retain * 7)
         # previous_results = [0]
         
         # Take some steps
@@ -300,7 +302,7 @@ class Simulation(unittest.TestCase):
         
 
     
-    def evaluate_population(self, sim_population, _game, _force_random_choice, _force_pickup):
+    def evaluate_population(self, sim_population, _game, _force_random_choice, _force_pickup, _steps_to_retain):
         # Get the number of networks in the population
         # For each network, retrieve its Keras model, and push it through the gym
         
@@ -316,7 +318,7 @@ class Simulation(unittest.TestCase):
             # print(nn_obj.layers[1].get_weights())
             
             # Send each network off to play the game now, and eventually this should return the fitness value
-            fitness = self.apply_nn_to_textworld(nn_obj, game = _game, force_random_choice = _force_random_choice, force_pickup = _force_pickup)
+            fitness = self.apply_nn_to_textworld(nn_obj, game = _game, force_random_choice = _force_random_choice, force_pickup = _force_pickup, steps_to_retain = _steps_to_retain)
             
             
             # Set the fitness of this network - for now ####################################################################

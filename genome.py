@@ -32,8 +32,8 @@ class Genome():
         genome["meta"] = {"serial_number": None, "checksum": None, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}
         
         # Define the shape of the inputs
-        input_shape = (specification["inputs"])
-        genome["inputs"] = input_shape
+        # input_shape = (specification["inputs"])
+        # genome["inputs"] = input_shape
         
         # genome = [Genome.create_random_gene(gene_length) for i in range(gene_count)]
         
@@ -69,7 +69,7 @@ class Genome():
     # def get_gene_specifications(self):
     def get_gene_specifications():
         gene_specification = {
-            "inputs": 40,
+            # "inputs": 40,
             "hidden_type": 1,
             "hidden_neurons_min": 512,
             "hidden_neurons_max": 512,

@@ -12,7 +12,9 @@ class Network:
         # print(self.dna["input"])
         self.fitness = None
         self.weights = []
-        self.dna = {"meta": {"serial_number": 0, "checksum": 0, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}, "input": None, "hidden_layers": [], "output": None}
+        # print(f"{self.specification}")
+        # quit()
+        self.dna = {"meta": {"serial_number": 0, "checksum": 0, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}, "inputs": None, "hidden_layers": [], "output": None}
         # self.dna = {}
     
     '''Create a random network from the genome'''
@@ -23,6 +25,7 @@ class Network:
         # genome = genome.Genome.create_random_genome(self.specification, hidden_layers_count)
         # self.dna = deepcopy(genome)
         self.dna["meta"]["serial_number"] = serial_number
+        # self.dna["input"]
         self.weights = []
     
     '''Return the components of this network in addressable DICT format'''
@@ -38,7 +41,7 @@ class Network:
     '''Set the components of this network via DICT inputs'''
     def create_specified_network_dna(self, serial_number, input_settings, hidden_weights, output_weights, parent_1, parent_2):
         # print(f"netwrok.create_specified_network_dna: {self.dna}")
-        self.dna["input"] = input_settings["input"]
+        self.dna["inputs"] = input_settings["inputs"]
         self.dna["hidden_layers"] = input_settings["hidden_layers"]
         self.dna["output"] = input_settings["output"]
         self.dna["meta"]["serial_number"] = serial_number
@@ -81,7 +84,7 @@ class Network:
     '''Builds the keras nn.Model from self and returns it'''
     def get_network_model(self):
         # Define the input layer from the dna
-        inputs = layers.Input(shape = (self.dna["input"],))
+        inputs = layers.Input(shape = (self.dna["inputs"],))
         
         # Get the definitions for the hidden layers
         hidden_layer_definitions = self.dna["hidden_layers"]

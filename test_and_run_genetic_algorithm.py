@@ -42,6 +42,11 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_results = []
         game = 'coin_collector_5'
         
+        # Number of steps to be saved to the input tensor directly affects the inputs to the nn.
+        # So the inputs needs to be removed from the base genome as it's variable now.
+        
+        
+        
         # possibly mod this to read experiments from a CSV and then iterate through them.
         # LAST
                
@@ -403,7 +408,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # self.assertIsInstance(child_nn_obj.get_network_dna()["meta"]["serial_number"], serial_number)
                 # print("DNA from the created nn obj")
                 # print(child_nn_obj.get_network_dna())
-                self.assertIsInstance(child_nn_obj.get_network_dna()["input"], int)
+                self.assertIsInstance(child_nn_obj.get_network_dna()["inputs"], int)
                 self.assertIsNot(len(child_nn_obj.get_network_dna()["hidden_layers"]), 0)
                 self.assertIsInstance(child_nn_obj.get_network_dna()["output"], dict)
                 self.assertIsNot(child_nn_obj.checksum_weights(1), 0)

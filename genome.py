@@ -33,7 +33,7 @@ class Genome():
         
         # Define the shape of the inputs
         input_shape = (specification["inputs"])
-        genome["input"] = input_shape
+        genome["inputs"] = input_shape
         
         # genome = [Genome.create_random_gene(gene_length) for i in range(gene_count)]
         
@@ -76,7 +76,7 @@ class Genome():
             "hidden_activation": 1,
             "outputs": 5,
             "output_type": 1,
-            "output_activation": 1            
+            "output_activation": 1
         }
         return gene_specification
         # return self.gene_specification

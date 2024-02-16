@@ -22,6 +22,7 @@ class Genome():
         #     "output_activation": 1            
         # }
     
+    # This one is properly static as this is effectively a data class, never itself instantiated.
     @staticmethod
     def create_random_genome(specification, hidden_layers_count):
         genome = {}

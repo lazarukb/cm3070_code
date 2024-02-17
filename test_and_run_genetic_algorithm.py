@@ -91,25 +91,24 @@ class TestGeneticAlgorithm(unittest.TestCase):
         self.assertEqual(sim_population.get_population_size(), size_new_generations)
         
         # Document the initial state
-        experiment_report['parameters'] = {
-            # 'experiment_comment': experiment_comment,
-            'generations': generations, 
-            'size_new_generations': size_new_generations, 
-            'max_population_size': max_population_size,
-            'point_mutation_chance': point_mutation_chance,
-            'point_mutation_amount': point_mutation_amount,
-            'force_random_choice': force_random_choice,
-            'force_pickup': force_pickup,
-            'game': game,
-            'point_mutation_chance_max': point_mutation_chance_max,
-            'point_mutation_amount_max':point_mutation_amount_max,
-            'point_mutation_scalar': point_mutation_scalar,
-            'steps_to_retain': steps_to_retain,
-            'inputs_size': inputs_size
-            }
+        # experiment_report['parameters'] = {
+        #     # 'experiment_comment': experiment_comment,
+        #     'generations': generations, 
+        #     'size_new_generations': size_new_generations, 
+        #     'max_population_size': max_population_size,
+        #     'point_mutation_chance': point_mutation_chance,
+        #     'point_mutation_amount': point_mutation_amount,
+        #     'force_random_choice': force_random_choice,
+        #     'force_pickup': force_pickup,
+        #     'game': game,
+        #     'point_mutation_chance_max': point_mutation_chance_max,
+        #     'point_mutation_amount_max':point_mutation_amount_max,
+        #     'point_mutation_scalar': point_mutation_scalar,
+        #     'steps_to_retain': steps_to_retain,
+        #     'inputs_size': inputs_size
+        #     }
         
         experiment_report['parameters'] = parameters
-        
         experiment_report['initial_population'] = reporting.Reporting.census(sim_population)
         experiment_report['generations'] = []
         

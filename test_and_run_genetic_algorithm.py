@@ -30,9 +30,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 10
-        size_new_generations = 15
-        max_population_size = 17
+        generations = 5
+        size_new_generations = 30
+        max_population_size = 32
         point_mutation_chance = 0.1
         point_mutation_amount = 0.05
         point_mutation_chance_max = 0.75
@@ -171,92 +171,46 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # Get the number of networks to carry over from the old generation to the new
                 # But cap at the number of networks in the old generation.
                 
-                print(f"\nProduce carryover from the old generation to the new. ", end = "")
+                print(f"\nProduce carryover from the old generation to the new. At most ", end = "")
                 # size_prev_gen = population.Population.get_population_size(sim_population)
                 size_prev_gen = sim_population.get_population_size()
                 carryover_count = max_population_size - size_new_generations
                 carryover_count = min(carryover_count, size_prev_gen)
-                print(f"{carryover_count} networks from the old generation will import to the new generation.")
-                # carryover_count = 1
+                print(f"{carryover_count} networks from the old generation could import to the new generation.")
                 
+                # Gather the fitnesses of the previous generation, and use numpy
+                #  to create a list sorting the element positions by fitness
                 all_fitnesses_prev_gen = []
                 for i in range(size_prev_gen):
                     all_fitnesses_prev_gen.append(sim_population.get_nn_fitness(i))
                 self.assertEqual(len(all_fitnesses_prev_gen), size_prev_gen)
                 
                 all_fitnesses_prev_gen = np.asarray(all_fitnesses_prev_gen)
-                
                 most_fit_networks = np.argsort(all_fitnesses_prev_gen)
                 most_fit_networks_desc = most_fit_networks[::-1].tolist()
-                # print(f"{all_fitnesses_prev_gen}")
-                # print(f"{most_fit_networks}, {type(most_fit_networks)}")
-                # print(f"{most_fit_networks_desc}, {type(most_fit_networks_desc)}")
-                
+
+                # Then iterate through the sorted list to copy the specified
+                #  count of fit networks to the new generation, unless they have
+                #  a minimum fitness.
                 for i in range(carryover_count):
-                    # print(f"This is iteration {i}.")
-                    # print(f"The index number we are going to copy is {most_fit_networks_desc[i]}. ", end = "")
-                    
-                    # This should be largely the same as creating a child network.
-                    # Get the network
-                    # nn_to_import = population.Population.get_neural_network_model(sim_population, most_fit_networks_desc[i])
-                    # nn_to_import = population.Population.get_neural_network_def(sim_population, i)
-                    
-                    import_nn_definition = {}
-                    # import_nn_definition = population.Population.get_neural_network_def(sim_population, most_fit_networks_desc[i])
-                    import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
-                    self.assertIsInstance(import_nn_definition, dict)
-                    # print(f"Serial number of network index {i} is {import_nn_definition['meta']['serial_number']}.")
-                    # print(f"Checksum of network index {i} is {import_nn_definition['meta']['checksum']}.")
-                    
-                    import_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 1)
-                    import_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 2)
-                    import_nn_serial = import_nn_definition['meta']['serial_number']
-                    import_nn_parent_1 = import_nn_definition['meta']['parent_1']
-                    import_nn_parent_2 = import_nn_definition['meta']['parent_2']
-                    
-                    self.assertIsInstance(import_nn_weights_bias, list)
-                    self.assertIsInstance(import_nn_output_weights_bias, list)
-                    
-                    # print(f"import_nn_serial: {import_nn_serial}, import_nn_parent_1: {import_nn_parent_1}, import_nn_parent_2: {import_nn_parent_2}")
-                    
-                    ############################
-                    ### this is wrong. should not be using the sim_population obecjt.  Also see the child_nn_obj creation around line 356.
-                    import_nn_obj = sim_population.create_nn(import_nn_serial, import_nn_definition, import_nn_weights_bias, import_nn_output_weights_bias, import_nn_parent_1, import_nn_parent_2)
-                    new_population.add_nn(import_nn_obj)
-                    
-                    # print(f"{import_nn_definition}")
-                    
-                    # import_nn_definition = population.Population.get_neural_network_def(sim_population, parent_1)         
-                    # import_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_1, 1)
-                    # import_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_1, 2)
-                    # self.assertIsInstance(parent_1_nn_definition, dict)
-                    
-                    # Still need to extract the original parent 1, parent 2, and serial number for this to work
-                    # import_sn = 
-                    # import_parent_1 = 
-                    # import_parent_2 = 
-                    
-                    # import_nn_obj = population.Population.create_nn(self, serial_number, import_nn_definition, import_nn_weights_bias, import_nn_output_weights_bias, parent_1, parent_2)
-                    # new_population.add_nn(import_nn_obj)
-                    
-                    # self.assertIsInstance(nn_to_import.get_network_dna()["input"], int)
-                    # self.assertIsNot(len(nn_to_import.get_network_dna()["hidden_layers"]), 0)
-                    # self.assertIsInstance(nn_to_import.get_network_dna()["output"], dict)
-                    
-                    # quit()
-                    
-                # self.assertEqual(population.Population.get_population_size(new_population), size_new_generations + carryover_count)
-                
-                # fitness_map = sim_population.get_fitness_map()
-                # Get the elements of the fitness_map sorted by fitness descending so we can easily grab the x most fit networks
-                
-                # for i in range(carryover_count):
-                    
-                #     network_to_import = all_fitnesses_prev_gen
-                #     # assertion
-                #     if i == 0:
-                #         self.assertEqual(fitness_map[::-i + 1], fitness_map[len(fitness_map) - 1])
-                #         quit()
+                    if sim_population.get_nn_fitness(most_fit_networks_desc[i]) != 1:
+                        import_nn_definition = {}
+                        import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
+                        self.assertIsInstance(import_nn_definition, dict)                    
+                        # import_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 1)
+                        # import_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 2)
+                        import_nn_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 1)
+                        import_nn_output_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 2)
+                        import_nn_serial = import_nn_definition['meta']['serial_number']
+                        import_nn_parent_1 = import_nn_definition['meta']['parent_1']
+                        import_nn_parent_2 = import_nn_definition['meta']['parent_2']
+                        self.assertIsInstance(import_nn_weights_bias, list)
+                        self.assertIsInstance(import_nn_output_weights_bias, list)
+                        
+                        ############################
+                        ### this is wrong. should not be using the sim_population obecjt.  Also see the child_nn_obj creation around line 356.
+                        import_nn_obj = sim_population.create_nn(import_nn_serial, import_nn_definition, import_nn_weights_bias, import_nn_output_weights_bias, import_nn_parent_1, import_nn_parent_2)
+                        new_population.add_nn(import_nn_obj)
                            
                        
             # print(f"\nFinal view of the population.")

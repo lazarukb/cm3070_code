@@ -29,8 +29,8 @@ class Breeding(unittest.TestCase):
             # print(f"{point_mutation_chance}, {point_mutation_amount}", end = "")
             point_mutation_chance *= point_mutation_scalar
             point_mutation_amount *= point_mutation_scalar
-            point_mutation_chance = max(point_mutation_chance, point_mutation_chance_max)
-            point_mutation_amount = max(point_mutation_amount, point_mutation_amount_max)
+            point_mutation_chance = min(point_mutation_chance, point_mutation_chance_max)
+            point_mutation_amount = min(point_mutation_amount, point_mutation_amount_max)
             # print(f" --> {point_mutation_chance}, {point_mutation_amount}")
 
         # Get the parental network definitions for future use               

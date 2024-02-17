@@ -8,7 +8,7 @@ class Population():
         self.networks = []
     
     '''Generate a population of Network objects with randomised dna'''
-    def test_create_random_population(self, population_size, serial_number, inputs_size):
+    def create_random_population(self, population_size, serial_number, inputs_size):
         for i in range(population_size):
             temp_network = network.Network()
             temp_network.create_random_network_dna(serial_number + i, inputs_size)

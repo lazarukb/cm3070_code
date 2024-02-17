@@ -6,7 +6,7 @@ import random
 
 class Breeding(unittest.TestCase):
     
-    def cross_and_mutate(self, sim_population, new_population, serial_number, point_mutation_chance, point_mutation_amount):
+    def cross_and_mutate(self, sim_population, new_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max):
         # Clear the child_nn_definition dict
         child_nn_definition = {}
 
@@ -18,6 +18,20 @@ class Breeding(unittest.TestCase):
             parent_2 = population.Population.get_weighted_parent(sim_population)
             self.assertIsInstance(parent_2, int)
         self.assertNotEqual(parent_1, parent_2)
+        
+        
+        # If both parents have fitness of 1 then neither succeeded at the game
+        # Increase the mutation chance and factor, to further distance the child from the parent definitions.
+        parent_1_fitness = sim_population.get_nn_fitness(parent_1)
+        parent_2_fitness = sim_population.get_nn_fitness(parent_2)
+        if (parent_1_fitness == 1) and (parent_2_fitness == 1):
+            self.assertEqual(parent_1_fitness, parent_2_fitness)
+            # print(f"{point_mutation_chance}, {point_mutation_amount}", end = "")
+            point_mutation_chance *= point_mutation_scalar
+            point_mutation_amount *= point_mutation_scalar
+            point_mutation_chance = max(point_mutation_chance, point_mutation_chance_max)
+            point_mutation_amount = max(point_mutation_amount, point_mutation_amount_max)
+            # print(f" --> {point_mutation_chance}, {point_mutation_amount}")
 
         # Get the parental network definitions for future use               
         # parent_1_nn_definition = population.Population.get_neural_network_def(sim_population, parent_1)

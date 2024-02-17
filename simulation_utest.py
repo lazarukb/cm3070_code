@@ -27,7 +27,7 @@ class Simulation(unittest.TestCase):
         
         # tw-make tw-coin_collector --level 5 --format ulx
         
-    def test_create_random_population(self, number_of_networks):
+    def create_random_population(self, number_of_networks):
         # the simulation should be creating the initial population and controlling the eventual population
         # which means moving that stuff from the test_and_run.py to here
         pass

@@ -30,11 +30,14 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 20
-        size_new_generations = 5
-        max_population_size = 7
+        generations = 10
+        size_new_generations = 15
+        max_population_size = 17
         point_mutation_chance = 0.1
         point_mutation_amount = 0.05
+        point_mutation_chance_max = 0.75
+        point_mutation_amount_max = 0.5
+        point_mutation_scalar = 5
         shrink_mutation_chance = 0.25
         growth_mutation_chance = 0.25
         force_random_choice = False
@@ -59,7 +62,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Create the initial population of randomised neural network definitions
         sim_population = population.Population()
-        sim_population.test_create_random_population(size_new_generations, serial_number, inputs_size)
+        sim_population.create_random_population(size_new_generations, serial_number, inputs_size)
         serial_number += size_new_generations
         
         # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
@@ -158,7 +161,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
             # Create an instance to handle the breeding and evolution work
             breeder = breeding.Breeding()
             for generation in range(size_new_generations):
-                new_population = breeder.cross_and_mutate(sim_population, new_population, serial_number, point_mutation_chance, point_mutation_amount)
+                new_population = breeder.cross_and_mutate(sim_population, new_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max)
                 serial_number += 1
 
             

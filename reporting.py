@@ -25,7 +25,9 @@ class Reporting():
         return results
     
     
-    def create_folders(subdir, comment):
+    def create_folders(parameters):
+        comment = parameters['experiment_comment']
+        subdir = parameters['experiment_number']
         if subdir == 0:
             return
         # Make the report directory
@@ -46,7 +48,8 @@ class Reporting():
             quit(1)
         
     
-    def output_to_csv(subdir, report):
+    def output_to_csv(parameters, report):
+        subdir = parameters['experiment_number']
         if subdir == 0:
             return
         # Assumes that the subdirectory exists as the create_folders function was called earlier.      

@@ -42,7 +42,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         parameters = {'experiment_number': 1,
                       'experiment_comment': "development - no experiment being saved",
-                      'generations': 1,
+                      'generations': 3,
                       'size_new_generations': 20,
                       'max_population_size': 40,
                       'point_mutation_chance': 0.3,

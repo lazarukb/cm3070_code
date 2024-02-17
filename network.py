@@ -6,16 +6,9 @@ from keras import layers
 class Network:
     def __init__(self):
         self.specification = genome.Genome.get_gene_specifications()
-        # self.dna = genome.Genome.create_random_genome(self.specification, hidden_layers_count)
-        # print("network.init:")
-        # print(self.dna)
-        # print(self.dna["input"])
         self.fitness = None
         self.weights = []
-        # print(f"{self.specification}")
-        # quit()
         self.dna = {"meta": {"serial_number": 0, "checksum": 0, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}, "inputs": None, "hidden_layers": [], "output": None}
-        # self.dna = {}
     
     '''Create a random network from the genome'''
     def create_random_network_dna(self, serial_number, inputs_size, hidden_layers_count = 1):

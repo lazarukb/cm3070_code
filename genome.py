@@ -4,7 +4,7 @@ Fixed components of the genome:
 Inputs: this is the number of 
 '''
 
-import numpy as np
+# import numpy as np
 import random
 
 # this code heavily derived from code presented in lectures in CM3020
@@ -28,37 +28,24 @@ class Genome():
         genome = {}
         
         # Prepare for storing some metadata
-        # genome["meta"] = {}
         genome["meta"] = {"serial_number": None, "checksum": None, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}
         
-        # Define the shape of the inputs
-        # input_shape = (specification["inputs"])
-        # genome["inputs"] = input_shape
-        
-        # genome = [Genome.create_random_gene(gene_length) for i in range(gene_count)]
-        
+        # Define the hidden layers
         hidden_layer_definitions = []
-        
         for layer in range(hidden_layers_count):
             activation = random.uniform(0, specification["hidden_activation"])
             type = random.uniform(0, specification["hidden_type"])
             neurons = random.uniform(specification["hidden_neurons_min"], specification["hidden_neurons_max"])
             layer = {"type": type, "neurons": neurons, "activation": activation}
-            # print("\n\nHidden layer:")
-            # print(layer)
-            # print("\n")
             hidden_layer_definitions.append(layer)
-        
         genome["hidden_layers"] = hidden_layer_definitions
         
+        # Final components of the genome
         output_count = (specification["outputs"])
         activation_out = random.uniform(0, specification["output_activation"])
         type_out = random.uniform(0, specification["output_type"])
         output_layer = {"type": type_out, "count": output_count, "activation": activation_out}
         genome["output"] = output_layer
-        
-        
-        # print(f"From the genome: {genome}")
         
         return genome
     
@@ -79,23 +66,4 @@ class Genome():
             "output_activation": 1
         }
         return gene_specification
-        # return self.gene_specification
-
-   
-    # '''Defines the components of the input layer gene, along with their maximum value'''
-    # @staticmethod
-    # def get_input_layer_gene_specifications():
-    #     input_layer_gene_specifications = {
-    #         "shape_input": 1
-    #     }
-    #     return input_layer_gene_specifications
-    
-    
-    # '''Defines the components of the hidden layer gene, along with their maximum value'''
-    # @staticmethod
-    # def get_hidden_layer_gene_specifications():
-    #     hidden_layer_gene_specifications = {
-            
-    #     }
-    
     

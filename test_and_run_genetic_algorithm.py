@@ -29,9 +29,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 10
-        size_new_generations = 50
-        max_population_size = 55
+        generations = 2
+        size_new_generations = 5
+        max_population_size = 7
         point_mutation_chance = 0.1
         point_mutation_amount = 0.05
         shrink_mutation_chance = 0.25
@@ -80,7 +80,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
             }
         
         experiment_report['initial_population'] = reporting.Reporting.census(sim_population)
-        
         experiment_report['generations'] = []
         
         # Create the simulation environment
@@ -150,6 +149,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
                         
             # Create new networks through breeding two randomly selected parent networks, and incorporating mutation
             # if marker1_max_fitness != marker2_avg_fitness:
+            
+            # Start with picking the two parents and sending those to a helper, returning the new child.            
+            
             print(f"Proceed with breeding ", end = "")
             for breeding in range(size_new_generations):
                 # Clear the child_nn_definition dict

@@ -7,7 +7,7 @@ import numpy as np
 
 class Breeding(unittest.TestCase):
     
-    def cross_and_mutate(self, sim_population, new_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max):
+    def cross_and_mutate(self, sim_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max, fitness_bias_scalar):
         # Clear the child_nn_definition dict
         child_nn_definition = {}
 
@@ -20,19 +20,29 @@ class Breeding(unittest.TestCase):
             self.assertIsInstance(parent_2, int)
         self.assertNotEqual(parent_1, parent_2)
         
-        
-        # If both parents have fitness of 1 then neither succeeded at the game
-        # Increase the mutation chance and factor, to further distance the child from the parent definitions.
+        # Fitness checks and modifications
         parent_1_fitness = sim_population.get_nn_fitness(parent_1)
         parent_2_fitness = sim_population.get_nn_fitness(parent_2)
+        # Create the fitness bias to increase the chance of the more fit
+        #  parent being selected in cross-over.  Since parent_1 is always copied
+        #  to the child and parent_2 is used if the random value is less than
+        #  the threshold, the threshold should be higher if parent_2's fitness is.
+        # So take the percentage of parent_2 over the total fitness of both parents,
+        #  which would be at most close to 0 or close to 1, and then subtract
+        #  0.5 which leaves a result where parent_1 is more fit as a negative
+        #  bias, or the opposite. Finally, scale it as required to adjust the
+        #  power of the bias.
+        fitness_bias = (parent_2_fitness / ((parent_1_fitness + parent_2_fitness)) - 0.5) * fitness_bias_scalar
+        
+        # If both parents have fitness of 1 then neither succeeded at the game
+        # Increase the mutation chance and factor, to further distance the 
+        #  child from the parent definitions.
         if (parent_1_fitness == 1) and (parent_2_fitness == 1):
             self.assertEqual(parent_1_fitness, parent_2_fitness)
-            # print(f"{point_mutation_chance}, {point_mutation_amount}", end = "")
             point_mutation_chance *= point_mutation_scalar
             point_mutation_amount *= point_mutation_scalar
             point_mutation_chance = min(point_mutation_chance, point_mutation_chance_max)
             point_mutation_amount = min(point_mutation_amount, point_mutation_amount_max)
-            # print(f" --> {point_mutation_chance}, {point_mutation_amount}")
 
         # Get the parental network definitions for future use
         parent_1_nn_definition = sim_population.get_neural_network_def(parent_1)
@@ -58,7 +68,7 @@ class Breeding(unittest.TestCase):
         child_network_weights = child_network_weights_bias[0]       ##### currently assuming that there is only one hidden layer
 
         # This assert checks that the parents are fully different 
-        #  because their weight checksums are
+        #  because their weight checksums are different.
         self.assertNotEqual(parent_1_nn_definition["meta"]["checksum"], parent_2_nn_definition["meta"]["checksum"])
         
         # Iterate through the child hidden layer weights, applying crossover and mutation to each
@@ -68,24 +78,7 @@ class Breeding(unittest.TestCase):
         #  and weighted chance of parent_2 being selected
         for i in range (len(child_network_weights[0])):
             # Crossover, 50% chance for each parent, for each neuron
-            # rand = random.random() + 0 ###############################################################
-            # if rand < 0.5:
-            #     child_network_weights[0][i] = parent_2_nn_weights_bias[0][0][i]
-                # self.assertNotEqual(parent_1_nn_weights_bias[0][0][i], parent_2_nn_weights_bias[0][0][i])
-                # self.assertNotEqual(child_network_weights[0][i], parent_1_nn_weights_bias[0][0][i])
-                
-            child_network_weights[0][i] = self.c_and_m("weight", child_network_weights[0][i], parent_2_nn_weights_bias[0][0][i], point_mutation_chance, point_mutation_amount)
-
-            # Point mutation change, for each neuron
-            # rand = random.random() + 0 ###############################################################
-            # if rand < point_mutation_chance:
-            #     # Randomly select an increase or decrease amount
-            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-            #     child_network_weights[0][i] += mutation_amount
-            #     if child_network_weights[0][i] < -1.0:
-            #         child_network_weights[0][i] = -1.0
-            #     elif child_network_weights[0][i] > 1.0:
-            #         child_network_weights[0][i] = 1.0
+            child_network_weights[0][i] = self.c_and_m("weight", child_network_weights[0][i], parent_2_nn_weights_bias[0][0][i], point_mutation_chance, point_mutation_amount, fitness_bias)
             completed_iterations += 1
             
             # Make sure the neuron weights are within the acceptable bounds, whether or not they were mutated.
@@ -104,51 +97,15 @@ class Breeding(unittest.TestCase):
         child_nn_definition = deepcopy(parent_1_nn_definition)
         
         # Nothing in the input layer to crossover or mutate. 
-        # If we change the inputs then the network will not be able to interact with OpenAI gym and its fitness will be 0, so it will "die". 
-        # No point in going through the effort to mutate a network that will use be useless.
-        
-        # print("Output of the parent's definitions")
-        # print(parent_1_nn_definition)
-        # print(parent_2_nn_definition)
-        
-        # Massive duplication in here - move this to a helper function
+        #  If we change the inputs then the network will not be able to 
+        #  interact with OpenAI gym and its fitness will be 0, so it will "die". 
+        #  No point in doing that.
         
         # Iterate through the child hidden layer floats in the DNA, applying crossover and mutation.
         for layer in range(len(child_nn_definition["hidden_layers"])):
             # Crossover, 50% chance for each parent, for each type and activation
-            # rand = random.random() + 0 ###############################################################
-            # if rand < 0.5:
-            #     child_nn_definition["hidden_layers"][layer]["type"] = parent_2_nn_definition["hidden_layers"][layer]["type"]
-            #     # self.assertNotEqual(parent_1_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"])
-            #     # self.assertNotEqual(child_nn_definition["hidden_layers"][layer]["type"], parent_1_nn_definition["hidden_layers"][layer]["type"])
-            
-            # rand = random.random() + 0 ###############################################################
-            # if rand < 0.5:
-            #     child_nn_definition["hidden_layers"][layer]["activation"] = parent_2_nn_definition["hidden_layers"][layer]["activation"]
-                
-            # # Point mutation, for each type and activation
-            # rand = random.random() + 0 ###############################################################
-            # if rand < point_mutation_chance:
-            #     # Randomly select an increase or decrease amount
-            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-            #     child_nn_definition["hidden_layers"][layer]["type"] += mutation_amount
-            #     if child_nn_definition["hidden_layers"][layer]["type"] < 0.0: 
-            #         child_nn_definition["hidden_layers"][layer]["type"] = 0.0
-            #     elif child_nn_definition["hidden_layers"][layer]["type"] > 1.0:
-            #         child_nn_definition["hidden_layers"][layer]["type"] = 1.0
-
-            # rand = random.random() + 0 ###############################################################
-            # if rand < point_mutation_chance:
-            #     # Randomly select an increase or decrease amount
-            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-            #     child_nn_definition["hidden_layers"][layer]["activation"] += mutation_amount
-            #     if child_nn_definition["hidden_layers"][layer]["activation"] < 0.0:
-            #         child_nn_definition["hidden_layers"][layer]["activation"] = 0.0
-            #     elif child_nn_definition["hidden_layers"][layer]["activation"] > 1.0:
-            #         child_nn_definition["hidden_layers"][layer]["activation"] = 1.0
-                    
-            child_nn_definition["hidden_layers"][layer]["activation"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["activation"], parent_2_nn_definition["hidden_layers"][layer]["activation"], point_mutation_chance, point_mutation_amount)
-            child_nn_definition["hidden_layers"][layer]["type"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"], point_mutation_chance, point_mutation_amount)
+            child_nn_definition["hidden_layers"][layer]["activation"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["activation"], parent_2_nn_definition["hidden_layers"][layer]["activation"], point_mutation_chance, point_mutation_amount, fitness_bias)
+            child_nn_definition["hidden_layers"][layer]["type"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"], point_mutation_chance, point_mutation_amount, fitness_bias)
             
             # Validate that all the floats are within the acceptable ranges.
             # print(child_nn_definition["hidden_layers"][layer]["activation"])
@@ -161,44 +118,11 @@ class Breeding(unittest.TestCase):
             
         
         # Repeat for the output layer - remember to move all this to a helper function or three.
-        # Crossover, 50% chance for each parent, for each type and activation
-        # rand = random.random() + 0 ###############################################################
-        # if rand < 0.5:
-        #     child_nn_definition["output"]["type"] = parent_2_nn_definition["output"]["type"]
-        #     # self.assertNotEqual(parent_1_nn_definition["output"]["type"], parent_2_nn_definition["output"]["type"])
-        #     # self.assertNotEqual(child_nn_definition["output"]["type"], parent_1_nn_definition["output"]["type"])
+        # Crossover, 50% chance for each parent, for each type and activation        
+        child_nn_definition["output"]["type"] = self.c_and_m("definition", child_nn_definition["output"]["type"], parent_2_nn_definition["output"]["type"], point_mutation_chance, point_mutation_amount, fitness_bias)       
+        child_nn_definition["output"]["activation"] = self.c_and_m("definition", child_nn_definition["output"]["activation"], parent_2_nn_definition["output"]["activation"], point_mutation_chance, point_mutation_amount, fitness_bias)
             
-        child_nn_definition["output"]["type"] = self.c_and_m("definition", child_nn_definition["output"]["type"], parent_2_nn_definition["output"]["type"], point_mutation_chance, point_mutation_amount)
-        
-        # rand = random.random() + 0 ###############################################################
-        # if rand < 0.5:
-        #     child_nn_definition["output"]["activation"] = parent_2_nn_definition["output"]["activation"]
-        #     # self.assertNotEqual(parent_1_nn_definition["output"]["activation"], parent_2_nn_definition["output"]["activation"])
-        #     # self.assertNotEqual(child_nn_definition["output"]["activation"], parent_1_nn_definition["output"]["activation"])
-        
-        child_nn_definition["output"]["activation"] = self.c_and_m("definition", child_nn_definition["output"]["activation"], parent_2_nn_definition["output"]["activation"], point_mutation_chance, point_mutation_amount)
-            
-        # Point mutation, for each type and activation
-        # rand = random.random() + 0 ###############################################################
-        # if rand < point_mutation_chance:
-        #     # Randomly select an increase or decrease amount
-        #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-        #     child_nn_definition["output"]["type"] += mutation_amount
-        #     if child_nn_definition["output"]["type"] < 0.0: 
-        #         child_nn_definition["output"]["type"] = 0.0
-        #     elif child_nn_definition["output"]["type"] > 1.0:
-        #         child_nn_definition["output"]["type"] = 1.0
-
-        # rand = random.random() + 0 ###############################################################
-        # if rand < point_mutation_chance:
-        #     # Randomly select an increase or decrease amount
-        #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-        #     child_nn_definition["output"]["activation"] += mutation_amount
-        #     if child_nn_definition["output"]["activation"] < 0.0: 
-        #         child_nn_definition["output"]["activation"] = 0.0
-        #     elif child_nn_definition["output"]["activation"] > 1.0:
-        #         child_nn_definition["output"]["activation"] = 1.0
-                
+               
         # Validate that all the floats are within the acceptable ranges.
         # print(child_nn_definition["output"]["type"])
         self.assertIsInstance(child_nn_definition["output"]["type"], float)
@@ -223,12 +147,7 @@ class Breeding(unittest.TestCase):
         # This layer also has 512 weights #####################################################################################
         parent_1_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_1, 2)
         parent_2_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_2, 2)
-        
-
-        # print("Let's look at the weights and biases information for the output layer")
-        # print(parent_1_nn_output_weights_bias)
-        # print(len(parent_1_nn_output_weights_bias[0]))
-        
+                
         
         # Create the child output layer weights as a full copy of parent 1. Then if necessary, replace with values from parent 2, thus achieving crossover breeding.
         child_network_output_weights_bias = deepcopy(parent_1_nn_output_weights_bias)
@@ -243,28 +162,9 @@ class Breeding(unittest.TestCase):
         completed_iterations = 0
         for i in range (len(child_network_output_weights[0])):
             # Crossover, 50% chance for each parent, for each neuron
-            child_network_output_weights[0][i] = self.c_and_m("weight", child_network_output_weights[0][i], parent_2_nn_output_weights_bias[0][0][i], point_mutation_chance, point_mutation_amount)
-
-
-            # rand = random.random() + 0 ###############################################################
-            # if rand < 0.5:
-            #     child_network_output_weights[0][i] = parent_2_nn_output_weights_bias[0][0][i]
-            #     # self.assertNotEqual(parent_1_nn_output_weights_bias[0][0][i], parent_2_nn_output_weights_bias[0][0][i])
-            #     # self.assertNotEqual(child_network_output_weights[0][i], parent_1_nn_output_weights_bias[0][0][i])
-
-            # # Point mutation change, for each neuron
-            # rand = random.random() + 0 ###############################################################
-            # if rand < point_mutation_chance:
-            #     # Randomly select an increase or decrease amount
-            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-            #     child_network_output_weights[0][i] += mutation_amount
-            #     if child_network_output_weights[0][i] < -1.0: 
-            #         child_network_output_weights[0][i] = -1.0
-            #     elif child_network_output_weights[0][i] > 1.0:
-            #         child_network_output_weights[0][i] = 1.0
+            child_network_output_weights[0][i] = self.c_and_m("weight", child_network_output_weights[0][i], parent_2_nn_output_weights_bias[0][0][i], point_mutation_chance, point_mutation_amount, fitness_bias)
             completed_iterations += 1
         
-
             # Make sure the neuron weights are within the acceptable bounds, whether or not they were mutated
             self.assertGreaterEqual(child_network_output_weights[0][i], -1.0)
             self.assertLessEqual(child_network_output_weights[0][i], 1.0)
@@ -275,19 +175,7 @@ class Breeding(unittest.TestCase):
         # Write the new weights back to the weights+biases variable, for later writing to the network object.            
         child_network_output_weights_bias[0] = child_network_output_weights
         
-        # Here we should be ready to create the new network definition dict and weights
-        # Child network dict: child_nn_definition
-        # Child network hidden weights+biases: child_network_weights_bias
-        # Child network output weights+biases: child_network_output_weights_bias
-        # print("Child being created")
-        # print(child_nn_definition)
-        # print(child_network_weights_bias)
-        # print(child_network_output_weights_bias)
-        # child_nn_obj = population.Population.create_nn(self, serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
-        
-        # This was wrong. It was storing the number of the parent from the population object, not the serial number of the parent.
-        # child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
-        
+       
         parent_1_sn = parent_1_nn_definition['meta']['serial_number']
         parent_2_sn = parent_2_nn_definition['meta']['serial_number']
         
@@ -304,12 +192,12 @@ class Breeding(unittest.TestCase):
         self.assertIsNot(child_nn_obj.checksum_weights(1), 0)
         self.assertIsNot(child_nn_obj.checksum_weights(2), 0)
         
-        # And add it to the new population
-        new_population.add_nn(child_nn_obj)
+        # # And add it to the new population
+        # new_population.add_nn(child_nn_obj)
         # serial_number += 1
     
-        self.assertIsInstance(new_population, population.Population)
-        return new_population
+        # self.assertIsInstance(new_population, population.Population)
+        return child_nn_obj
     
     def carry_over():
         pass
@@ -330,7 +218,7 @@ class Breeding(unittest.TestCase):
         #  or the parent_2 value
         rand = random.random()
         used_parent_2 = None
-        threshold = 0.5 + fitness_bias
+        threshold = min(0.5 + fitness_bias, 1.0)
         if rand < threshold:
             result = parent_value
             used_parent_2 = True

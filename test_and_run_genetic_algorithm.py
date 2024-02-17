@@ -54,7 +54,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
                       'force_pickup': False,
                       'game': 'coin_collector_5',
                       'steps_to_retain': steps_to_retain,
-                      'inputs_size': inputs_size}
+                      'inputs_size': inputs_size,
+                      'fitness_bias_scalar': 0.25}
         
         # Defining some globals - may reset these throughout the code to passing the parameters dict instead, may not ... --------------------------------------
         generations = parameters['generations']
@@ -68,6 +69,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         force_random_choice = parameters['force_random_choice']
         force_pickup = parameters['force_pickup']
         game = parameters['game']
+        fitness_bias_scalar = parameters['fitness_bias_scalar']
         # steps_to_retain = parameters['steps_to_retain']
         # inputs_size = parameters['inputs_size']
 
@@ -118,10 +120,11 @@ class TestGeneticAlgorithm(unittest.TestCase):
         # Run the networks through the gym and gather their fitness scores
         for iteration in range(generations):
             print(f"Beginning of evaluation for generation {iteration}, ", end = "")
-            # experiment_report['generations'].append([])
+            
+            # Prepare for reporting
             experiment_results = {'after_evaluation': [], 'after_carryover': []}
                        
-            # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
+            # Validate that the simulation_population is of the proper class
             self.assertIsInstance(sim_population, population.Population)
             
             # run the networks through the game, which modifies the components of the simulation_population object
@@ -179,17 +182,20 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # Start with picking the two parents and sending those to a helper, returning the new child.
             
-            
-                       
-            
             # Breed, cross-over, and mutate the population to produce a new population
-            print(f"Proceed with breeding ", end = "")
+            print(f"All networks have been run through the Textworld. Proceed with breeding.")
             # Create the population instance target for the children
             new_population = population.Population()
             # Create an instance to handle the breeding and evolution work
+            # This should probably be static. Look into it and fix. -------------------------------------------------------------------------------------------------------
             breeder = breeding.Breeding()
-            for generation in range(size_new_generations):
-                new_population = breeder.cross_and_mutate(sim_population, new_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max)
+            
+            # For each new child neural network that is required, run the breeder.
+            for new_child_nn in range(size_new_generations):
+                # Create the new child neural network object
+                new_child_nn_obj = breeder.cross_and_mutate(sim_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max, fitness_bias_scalar)
+                # And add it to the new population
+                new_population.add_nn(new_child_nn_obj)
                 serial_number += 1
 
             
@@ -250,7 +256,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                         if old_nn_sn == new_nn_sn:
                             new_nn_checksum = new_population.get_neural_network_def(new_nn)['meta']['checksum']
                             old_nn_checksum = sim_population.get_neural_network_def(old_nn)['meta']['checksum']
-                            self.assertEqual(new_nn_checksum, old_nn_checksum)     
+                            self.assertEqual(new_nn_checksum, old_nn_checksum)   
             
             # Replace the old population with the new one
             sim_population = deepcopy(new_population)

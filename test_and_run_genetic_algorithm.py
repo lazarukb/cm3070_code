@@ -7,6 +7,7 @@ import random
 import numpy as np
 import reporting
 from operator import itemgetter
+import breeding
 
 # So this is the main test-and-run ... all the unittesting stays in here.  Remove from elsewhere.
 
@@ -29,7 +30,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         experiment_comment = "development - no experiment being saved"
         serial_number = 0
         populations = []             ###### for possible future use in saving multiple populations for comparisons
-        generations = 2
+        generations = 20
         size_new_generations = 5
         max_population_size = 7
         point_mutation_chance = 0.1
@@ -91,8 +92,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
             # experiment_report['generations'].append([])
             experiment_results = {'after_evaluation': [], 'after_carryover': []}
                        
-            # Create the population instance target for the children
-            new_population = population.Population()
             # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
             self.assertIsInstance(sim_population, population.Population)
             
@@ -152,301 +151,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # Start with picking the two parents and sending those to a helper, returning the new child.            
             
+            # Breed, cross-over, and mutate the population to produce a new population
             print(f"Proceed with breeding ", end = "")
-            for breeding in range(size_new_generations):
-                # Clear the child_nn_definition dict
-                child_nn_definition = {}
-
-                # Select two parent networks from the population, until two separate parents are chosen
-                parent_1 = population.Population.get_weighted_parent(sim_population)
-                self.assertIsInstance(parent_1, int)
-                parent_2 = parent_1
-                while parent_1 == parent_2:
-                    parent_2 = population.Population.get_weighted_parent(sim_population)
-                    self.assertIsInstance(parent_2, int)
-                self.assertNotEqual(parent_1, parent_2)
-                
-                # print(f"\nParents: {parent_1}, {parent_2}")
-                # print(f"Parent definitions: \n{population.Population.get_neural_network_def(sim_population, parent_1)}, \n{population.Population.get_neural_network_def(sim_population, parent_2)}")
-            
-                # Get the parental network definitions for future use               
-                # parent_1_nn_definition = population.Population.get_neural_network_def(sim_population, parent_1)
-                # parent_2_nn_definition = population.Population.get_neural_network_def(sim_population, parent_2)
-                parent_1_nn_definition = sim_population.get_neural_network_def(parent_1)
-                parent_2_nn_definition = sim_population.get_neural_network_def(parent_2)
-                self.assertIsInstance(parent_1_nn_definition, dict)
-                self.assertIsInstance(parent_2_nn_definition, dict)
-                
-                # Get the parental hidden layers element, for now assuming there is only one hidden layer                
-                parent_1_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_1, 1)
-                parent_2_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_2, 1)
-                self.assertIsInstance(parent_1_nn_weights_bias, list)
-                self.assertIsInstance(parent_2_nn_weights_bias, list)
-                
-                # Because the grandparents for both parents may be the same, there is a pretty good chance that at least some of the weights
-                # in both parents are the same, inherited from the same grandparent. So we can no longer test all the weights to ensure they
-                # changed, we have to test the checksum of the weights and activation and type floats all added. There is almost no chance
-                # those are not unique between two networks, when measured to ~17 decimal places.
-                self.assertNotEqual(parent_1_nn_definition["meta"]["checksum"], parent_2_nn_definition["meta"]["checksum"])
-                
-                
-                # print("Children crossover and mutation stuff")
-                # Create a child neural network from the parents, and potentially affected by mutation.
-                
-                # Create the child hidden layer weights as a full copy of parent 1. Then as necessary, replace with values from parent 2, thus achieving crossover breeding.
-                child_network_weights_bias = deepcopy(parent_1_nn_weights_bias)
-                child_network_weights = child_network_weights_bias[0]       ##### currently assuming that there is only one hidden layer
-                # Randomly sample to make sure the copy worked
-                # rand = random.randint(0, len(parent_1_nn_weights_bias[0][0]) - 1)
-                # self.assertEqual(child_network_weights[0][rand], parent_1_nn_weights_bias[0][0][rand])
-                
-                # Assert checks that the parents are fully different because their weight checksums are
-                self.assertNotEqual(parent_1_nn_definition["meta"]["checksum"], parent_2_nn_definition["meta"]["checksum"])
-                
-                # Iterate through the child hidden layer weights, applying crossover and mutation to each
-                completed_iterations = 0
-                for i in range (len(child_network_weights[0])):
-                    # Crossover, 50% chance for each parent, for each neuron
-                    rand = random.random() + 0 ###############################################################
-                    if rand < 0.5:
-                        child_network_weights[0][i] = parent_2_nn_weights_bias[0][0][i]
-                        # self.assertNotEqual(parent_1_nn_weights_bias[0][0][i], parent_2_nn_weights_bias[0][0][i])
-                        # self.assertNotEqual(child_network_weights[0][i], parent_1_nn_weights_bias[0][0][i])
-
-                    # Point mutation change, for each neuron
-                    rand = random.random() + 0 ###############################################################
-                    if rand < point_mutation_chance:
-                        # Randomly select an increase or decrease amount
-                        mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                        child_network_weights[0][i] += mutation_amount
-                        if child_network_weights[0][i] < -1.0:
-                            child_network_weights[0][i] = -1.0
-                        elif child_network_weights[0][i] > 1.0:
-                            child_network_weights[0][i] = 1.0
-                    completed_iterations += 1
-                    
-                    # Make sure the neuron weights are within the acceptable bounds, whether or not they were mutated.
-                    self.assertGreaterEqual(child_network_weights[0][i], -1.0)
-                    self.assertLessEqual(child_network_weights[0][i], 1.0)
-                
-                # Make sure we went over all the neurons
-                self.assertEqual(completed_iterations, len(child_network_weights[0]))
-                
-                # Write the new weights back to the weights+biases variable, for later writing to the network object.            
-                child_network_weights_bias[0] = child_network_weights
-                
-                # Now crossover and mutate the floats in the DNA
-                # Again start with the child being a full copy of parent 1, then achieve crossover by replacing with parts of parent_2.
-                child_nn_definition = deepcopy(parent_1_nn_definition)
-                
-                # Nothing in the input layer to crossover or mutate. 
-                # If we change the inputs then the network will not be able to interact with OpenAI gym and its fitness will be 0, so it will "die". 
-                # No point in going through the effort to mutate a network that will use be useless.
-                
-                # print("Output of the parent's definitions")
-                # print(parent_1_nn_definition)
-                # print(parent_2_nn_definition)
-                
-                # Massive duplication in here - move this to a helper function
-                
-                # Iterate through the child hidden layer floats in the DNA, applying crossover and mutation.
-                for layer in range(len(child_nn_definition["hidden_layers"])):
-                    # Crossover, 50% chance for each parent, for each type and activation
-                    rand = random.random() + 0 ###############################################################
-                    if rand < 0.5:
-                        child_nn_definition["hidden_layers"][layer]["type"] = parent_2_nn_definition["hidden_layers"][layer]["type"]
-                        # self.assertNotEqual(parent_1_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"])
-                        # self.assertNotEqual(child_nn_definition["hidden_layers"][layer]["type"], parent_1_nn_definition["hidden_layers"][layer]["type"])
-                    
-                    rand = random.random() + 0 ###############################################################
-                    if rand < 0.5:
-                        child_nn_definition["hidden_layers"][layer]["activation"] = parent_2_nn_definition["hidden_layers"][layer]["activation"]
-                        
-                    # Point mutation, for each type and activation
-                    rand = random.random() + 0 ###############################################################
-                    if rand < point_mutation_chance:
-                        # Randomly select an increase or decrease amount
-                        mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                        child_nn_definition["hidden_layers"][layer]["type"] += mutation_amount
-                        if child_nn_definition["hidden_layers"][layer]["type"] < 0.0: 
-                            child_nn_definition["hidden_layers"][layer]["type"] = 0.0
-                        elif child_nn_definition["hidden_layers"][layer]["type"] > 1.0:
-                            child_nn_definition["hidden_layers"][layer]["type"] = 1.0
-    
-                    rand = random.random() + 0 ###############################################################
-                    if rand < point_mutation_chance:
-                        # Randomly select an increase or decrease amount
-                        mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                        child_nn_definition["hidden_layers"][layer]["activation"] += mutation_amount
-                        if child_nn_definition["hidden_layers"][layer]["activation"] < 0.0:
-                            child_nn_definition["hidden_layers"][layer]["activation"] = 0.0
-                        elif child_nn_definition["hidden_layers"][layer]["activation"] > 1.0:
-                            child_nn_definition["hidden_layers"][layer]["activation"] = 1.0
-                    
-                    # Validate that all the floats are within the acceptable ranges.
-                    # print(child_nn_definition["hidden_layers"][layer]["activation"])
-                    self.assertGreaterEqual(child_nn_definition["hidden_layers"][layer]["type"], 0.0)
-                    self.assertLessEqual(child_nn_definition["hidden_layers"][layer]["type"], 1.0)
-                    self.assertGreaterEqual(child_nn_definition["hidden_layers"][layer]["activation"], 0.0)
-                    self.assertLessEqual(child_nn_definition["hidden_layers"][layer]["activation"], 1.0)
-                    
-                
-                # Repeat for the output layer - remember to move all this to a helper function or three.
-                # Crossover, 50% chance for each parent, for each type and activation
-                rand = random.random() + 0 ###############################################################
-                if rand < 0.5:
-                    child_nn_definition["output"]["type"] = parent_2_nn_definition["output"]["type"]
-                    # self.assertNotEqual(parent_1_nn_definition["output"]["type"], parent_2_nn_definition["output"]["type"])
-                    # self.assertNotEqual(child_nn_definition["output"]["type"], parent_1_nn_definition["output"]["type"])
-                
-                rand = random.random() + 0 ###############################################################
-                if rand < 0.5:
-                    child_nn_definition["output"]["activation"] = parent_2_nn_definition["output"]["activation"]
-                    # self.assertNotEqual(parent_1_nn_definition["output"]["activation"], parent_2_nn_definition["output"]["activation"])
-                    # self.assertNotEqual(child_nn_definition["output"]["activation"], parent_1_nn_definition["output"]["activation"])
-                    
-                # Point mutation, for each type and activation
-                rand = random.random() + 0 ###############################################################
-                if rand < point_mutation_chance:
-                    # Randomly select an increase or decrease amount
-                    mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                    child_nn_definition["output"]["type"] += mutation_amount
-                    if child_nn_definition["output"]["type"] < 0.0: 
-                        child_nn_definition["output"]["type"] = 0.0
-                    elif child_nn_definition["output"]["type"] > 1.0:
-                        child_nn_definition["output"]["type"] = 1.0
-
-                rand = random.random() + 0 ###############################################################
-                if rand < point_mutation_chance:
-                    # Randomly select an increase or decrease amount
-                    mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                    child_nn_definition["output"]["activation"] += mutation_amount
-                    if child_nn_definition["output"]["activation"] < 0.0: 
-                        child_nn_definition["output"]["activation"] = 0.0
-                    elif child_nn_definition["output"]["activation"] > 1.0:
-                        child_nn_definition["output"]["activation"] = 1.0
-                        
-                # Validate that all the floats are within the acceptable ranges.
-                # print(child_nn_definition["output"]["type"])
-                self.assertGreaterEqual(child_nn_definition["output"]["type"], 0.0)
-                self.assertLessEqual(child_nn_definition["output"]["type"], 1.0)
-                self.assertGreaterEqual(child_nn_definition["output"]["activation"], 0.0)
-                self.assertLessEqual(child_nn_definition["output"]["activation"], 1.0)                   
-
-                # At this point:
-                # The code above is still assuming that only one hidden layer exists. **************************
-                # All the weights of the hidden layer are crossed over and mutated.
-                # All the floats of the hidden layer are crossed over and mutated.
-                # All the weights of the output layer are **** NOT **** crossed over and mutated. ****************
-                # All the floats of the output layer are crossed over and mutated.
-                # print("Output of the child definition")
-                # print(child_nn_definition)
-                
-                
-                # This will retrieve the last elements of the layers information, which will be the output layer
-                # Continues to assume there is only one hidden layer which needs to be changed later on.
-                # This layer also has 512 weights #####################################################################################
-                parent_1_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_1, 2)
-                parent_2_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, parent_2, 2)
-                
-
-                # print("Let's look at the weights and biases information for the output layer")
-                # print(parent_1_nn_output_weights_bias)
-                # print(len(parent_1_nn_output_weights_bias[0]))
-                
-                
-                # Create the child output layer weights as a full copy of parent 1. Then if necessary, replace with values from parent 2, thus achieving crossover breeding.
-                child_network_output_weights_bias = deepcopy(parent_1_nn_output_weights_bias)
-                child_network_output_weights = child_network_output_weights_bias[0]       ##### currently assuming that there is only one hidden layer
-                child_network_output_weights_initial = deepcopy(child_network_output_weights)
-                # Randomly sample to make sure the copy worked
-                rand = random.randint(0, len(parent_1_nn_output_weights_bias[0][0]) - 1)
-                self.assertEqual(child_network_output_weights[0][rand], parent_1_nn_output_weights_bias[0][0][rand])
-                
-                # Iterate through the child output layer weights, applying crossover and mutation to each
-                completed_iterations = 0
-                for i in range (len(child_network_output_weights[0])):
-                    # Crossover, 50% chance for each parent, for each neuron
-                    rand = random.random() + 0 ###############################################################
-                    if rand < 0.5:
-                        child_network_output_weights[0][i] = parent_2_nn_output_weights_bias[0][0][i]
-                        # self.assertNotEqual(parent_1_nn_output_weights_bias[0][0][i], parent_2_nn_output_weights_bias[0][0][i])
-                        # self.assertNotEqual(child_network_output_weights[0][i], parent_1_nn_output_weights_bias[0][0][i])
-
-                    # Point mutation change, for each neuron
-                    rand = random.random() + 0 ###############################################################
-                    if rand < point_mutation_chance:
-                        # Randomly select an increase or decrease amount
-                        mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                        child_network_output_weights[0][i] += mutation_amount
-                        if child_network_output_weights[0][i] < -1.0: 
-                            child_network_output_weights[0][i] = -1.0
-                        elif child_network_output_weights[0][i] > 1.0:
-                            child_network_output_weights[0][i] = 1.0
-                    completed_iterations += 1
-                
-
-                    # Make sure the neuron weights are within the acceptable bounds, whether or not they were mutated
-                    self.assertGreaterEqual(child_network_output_weights[0][i], -1.0)
-                    self.assertLessEqual(child_network_output_weights[0][i], 1.0)
-                    
-                # Make sure we went over all the neurons
-                self.assertEqual(completed_iterations, len(child_network_output_weights[0]))
-                
-                # Write the new weights back to the weights+biases variable, for later writing to the network object.            
-                child_network_output_weights_bias[0] = child_network_output_weights
-                
-                # Here we should be ready to create the new network definition dict and weights
-                # Child network dict: child_nn_definition
-                # Child network hidden weights+biases: child_network_weights_bias
-                # Child network output weights+biases: child_network_output_weights_bias
-                # print("Child being created")
-                # print(child_nn_definition)
-                # print(child_network_weights_bias)
-                # print(child_network_output_weights_bias)
-                # child_nn_obj = population.Population.create_nn(self, serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
-                
-                # This was wrong. It was storing the number of the parent from the population object, not the serial number of the parent.
-                # child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1, parent_2)
-                
-                parent_1_sn = parent_1_nn_definition['meta']['serial_number']
-                parent_2_sn = parent_2_nn_definition['meta']['serial_number']
-                
-                # print(f"\n\np1 number: {parent_1}, p1_sn: {parent_1_sn}, p2 number: {parent_2}, p2_sn: {parent_2_sn}\n\n")
-                child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1_sn, parent_2_sn)
-                
-                # Do some assertions to confirm that the child nn is properly defined and populated
-                # self.assertIsInstance(child_nn_obj.get_network_dna()["meta"]["serial_number"], serial_number)
-                # print("DNA from the created nn obj")
-                # print(child_nn_obj.get_network_dna())
-                self.assertIsInstance(child_nn_obj.get_network_dna()["inputs"], int)
-                self.assertIsNot(len(child_nn_obj.get_network_dna()["hidden_layers"]), 0)
-                self.assertIsInstance(child_nn_obj.get_network_dna()["output"], dict)
-                self.assertIsNot(child_nn_obj.checksum_weights(1), 0)
-                self.assertIsNot(child_nn_obj.checksum_weights(2), 0)
-                
-                # And add it to the new population
-                # print(f"Add child to the new population")
-                new_population.add_nn(child_nn_obj)
+            # Create the population instance target for the children
+            new_population = population.Population()
+            # Create an instance to handle the breeding and evolution work
+            breeder = breeding.Breeding()
+            for generation in range(size_new_generations):
+                new_population = breeder.cross_and_mutate(sim_population, new_population, serial_number, point_mutation_chance, point_mutation_amount)
                 serial_number += 1
-                
-                # print("Let's look at the crossed and mutated weights and biases information for the output layer. To see if something has in fact changed.")
-                # print(child_network_output_weights_bias)
-                # print(len(child_network_output_weights_bias[0]))   
-            # else:
-            #     # Not enough individuals with positive fitness. Throw out the batch
-            #     print(f"Not enough individuals with positive fitness. Throw out the batch. ")
-            #     print(f"Fitness map: {fitness_map}")
-            #     new_population = population.Population()
-            #     new_population.test_create_random_population(init_population_size, serial_number)
 
-            # print("\nBreeding cycle is complete. Moving on to cleanup.")
-            # That should be it. The new_population should have a population count of init_population_size
-            # self.assertEqual(population.Population.get_population_size(new_population), size_new_generations)
-            
-
-            
-            
             
             # If you're going to retain the most fit individual(s) from the previous generation, here is where that should happen
             # select the most fit individuals from the existing generation and move them into the new generation
@@ -576,7 +290,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # Capture the state of the population with fitnesses after they've gone through the breeding and carryover
             experiment_results['after_carryover'] = reporting.Reporting.census(sim_population)
-            
             experiment_report['generations'].append(experiment_results)
             
             print("Generation is complete.")    

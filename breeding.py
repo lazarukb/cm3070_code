@@ -116,39 +116,44 @@ class Breeding(unittest.TestCase):
         # Iterate through the child hidden layer floats in the DNA, applying crossover and mutation.
         for layer in range(len(child_nn_definition["hidden_layers"])):
             # Crossover, 50% chance for each parent, for each type and activation
-            rand = random.random() + 0 ###############################################################
-            if rand < 0.5:
-                child_nn_definition["hidden_layers"][layer]["type"] = parent_2_nn_definition["hidden_layers"][layer]["type"]
-                # self.assertNotEqual(parent_1_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"])
-                # self.assertNotEqual(child_nn_definition["hidden_layers"][layer]["type"], parent_1_nn_definition["hidden_layers"][layer]["type"])
+            # rand = random.random() + 0 ###############################################################
+            # if rand < 0.5:
+            #     child_nn_definition["hidden_layers"][layer]["type"] = parent_2_nn_definition["hidden_layers"][layer]["type"]
+            #     # self.assertNotEqual(parent_1_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"])
+            #     # self.assertNotEqual(child_nn_definition["hidden_layers"][layer]["type"], parent_1_nn_definition["hidden_layers"][layer]["type"])
             
-            rand = random.random() + 0 ###############################################################
-            if rand < 0.5:
-                child_nn_definition["hidden_layers"][layer]["activation"] = parent_2_nn_definition["hidden_layers"][layer]["activation"]
+            # rand = random.random() + 0 ###############################################################
+            # if rand < 0.5:
+            #     child_nn_definition["hidden_layers"][layer]["activation"] = parent_2_nn_definition["hidden_layers"][layer]["activation"]
                 
-            # Point mutation, for each type and activation
-            rand = random.random() + 0 ###############################################################
-            if rand < point_mutation_chance:
-                # Randomly select an increase or decrease amount
-                mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                child_nn_definition["hidden_layers"][layer]["type"] += mutation_amount
-                if child_nn_definition["hidden_layers"][layer]["type"] < 0.0: 
-                    child_nn_definition["hidden_layers"][layer]["type"] = 0.0
-                elif child_nn_definition["hidden_layers"][layer]["type"] > 1.0:
-                    child_nn_definition["hidden_layers"][layer]["type"] = 1.0
+            # # Point mutation, for each type and activation
+            # rand = random.random() + 0 ###############################################################
+            # if rand < point_mutation_chance:
+            #     # Randomly select an increase or decrease amount
+            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
+            #     child_nn_definition["hidden_layers"][layer]["type"] += mutation_amount
+            #     if child_nn_definition["hidden_layers"][layer]["type"] < 0.0: 
+            #         child_nn_definition["hidden_layers"][layer]["type"] = 0.0
+            #     elif child_nn_definition["hidden_layers"][layer]["type"] > 1.0:
+            #         child_nn_definition["hidden_layers"][layer]["type"] = 1.0
 
-            rand = random.random() + 0 ###############################################################
-            if rand < point_mutation_chance:
-                # Randomly select an increase or decrease amount
-                mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
-                child_nn_definition["hidden_layers"][layer]["activation"] += mutation_amount
-                if child_nn_definition["hidden_layers"][layer]["activation"] < 0.0:
-                    child_nn_definition["hidden_layers"][layer]["activation"] = 0.0
-                elif child_nn_definition["hidden_layers"][layer]["activation"] > 1.0:
-                    child_nn_definition["hidden_layers"][layer]["activation"] = 1.0
+            # rand = random.random() + 0 ###############################################################
+            # if rand < point_mutation_chance:
+            #     # Randomly select an increase or decrease amount
+            #     mutation_amount = random.uniform(-point_mutation_amount, point_mutation_amount)
+            #     child_nn_definition["hidden_layers"][layer]["activation"] += mutation_amount
+            #     if child_nn_definition["hidden_layers"][layer]["activation"] < 0.0:
+            #         child_nn_definition["hidden_layers"][layer]["activation"] = 0.0
+            #     elif child_nn_definition["hidden_layers"][layer]["activation"] > 1.0:
+            #         child_nn_definition["hidden_layers"][layer]["activation"] = 1.0
+                    
+            child_nn_definition["hidden_layers"][layer]["activation"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["activation"], parent_2_nn_definition["hidden_layers"][layer]["activation"], point_mutation_chance, point_mutation_amount)
+            child_nn_definition["hidden_layers"][layer]["type"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"], point_mutation_chance, point_mutation_amount)
             
             # Validate that all the floats are within the acceptable ranges.
             # print(child_nn_definition["hidden_layers"][layer]["activation"])
+            self.assertIsInstance(child_nn_definition["hidden_layers"][layer]["type"], float)
+            self.assertIsInstance(child_nn_definition["hidden_layers"][layer]["activation"], float)
             self.assertGreaterEqual(child_nn_definition["hidden_layers"][layer]["type"], 0.0)
             self.assertLessEqual(child_nn_definition["hidden_layers"][layer]["type"], 1.0)
             self.assertGreaterEqual(child_nn_definition["hidden_layers"][layer]["activation"], 0.0)
@@ -238,8 +243,6 @@ class Breeding(unittest.TestCase):
         completed_iterations = 0
         for i in range (len(child_network_output_weights[0])):
             # Crossover, 50% chance for each parent, for each neuron
-            
-                            
             child_network_output_weights[0][i] = self.c_and_m("weight", child_network_output_weights[0][i], parent_2_nn_output_weights_bias[0][0][i], point_mutation_chance, point_mutation_amount)
 
 

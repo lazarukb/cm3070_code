@@ -12,11 +12,11 @@ class Breeding(unittest.TestCase):
         child_nn_definition = {}
 
         # Select two parent networks from the population, until two unique parents are chosen
-        parent_1 = population.Population.get_weighted_parent(sim_population)
+        parent_1 = sim_population.get_weighted_parent()
         self.assertIsInstance(parent_1, int)
         parent_2 = parent_1
         while parent_1 == parent_2:
-            parent_2 = population.Population.get_weighted_parent(sim_population)
+            parent_2 = sim_population.get_weighted_parent()
             self.assertIsInstance(parent_2, int)
         self.assertNotEqual(parent_1, parent_2)
         

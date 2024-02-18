@@ -32,7 +32,7 @@ class Simulation(unittest.TestCase):
         # which means moving that stuff from the test_and_run.py to here
         pass
     
-    def registerEnvId(self, code, env_parameters):
+    def registerEnvId(self, code):
         # print("testRegisterEnvId")
         tw_game_index = TextworldGames.TextworldGames()
         # maximum number of steps, basically a peak fitness network
@@ -40,12 +40,13 @@ class Simulation(unittest.TestCase):
         self.assertIsNotNone(code)
         file_path = tw_game_index.getGamePath(code)
         self.assertIsNotNone(file_path)
-        environment_id = textworld.gym.register_game(file_path, env_parameters, max_episode_steps = max_steps)
+        environment_id = textworld.gym.register_game(file_path, self.env_parameters, max_episode_steps = max_steps)
         self.assertIsInstance(environment_id, str)
         return environment_id, max_steps
+    
       
     def apply_nn_to_textworld(self, nn_obj, game, force_random_choice, force_pickup, steps_to_retain):
-        environment_id, max_steps = self.registerEnvId(game, self.env_parameters)
+        environment_id, max_steps = self.registerEnvId(game)
         environment = textworld.gym.make(environment_id)
         obs, infos = environment.reset()
         self.assertIsInstance(obs, str)
@@ -272,6 +273,7 @@ class Simulation(unittest.TestCase):
                 
             previous_action_spaces_and_choices.append(this_step_and_results)
             
+            # self.assertEqual(1, 1)
             if result_to_be_added != previous_action_spaces_and_choices[len(previous_action_spaces_and_choices) - 1][6]:
                 # print(f"These should be equal")
                 quit()
@@ -309,6 +311,7 @@ class Simulation(unittest.TestCase):
         # When this is called, the population of Network objects already exists as sim_population, which is a Population instance
         # Get the number of networks in the population
         # networks_count = population.Population.get_population_size(sim_population)
+        # self.assertEqual(1, 1)
         networks_count = sim_population.get_population_size()
         # print(f"Evaluating networks ", end = "")
         for i in range(networks_count):

@@ -218,7 +218,10 @@ class Breeding(unittest.TestCase):
         #  or the parent_2 value
         rand = random.random()
         used_parent_2 = None
-        threshold = min(0.5 + fitness_bias, 1.0)
+        if fitness_bias <= 0:
+            threshold = max(0.5 + fitness_bias, -1.0)
+        else:
+            threshold = min(0.5 + fitness_bias, 1.0)
         if rand < threshold:
             result = parent_value
             used_parent_2 = True
@@ -254,7 +257,7 @@ class Breeding(unittest.TestCase):
         #  so capped. In that case only the first assertion will have value,
         #  showing that the mutation was at minimum considered.
         self.assertIsNotNone(mutated)
-        if mutated and result != 0 and result != 1.0:
+        if mutated and result != range_min and result != range_max:
             if used_parent_2:
                 self.assertNotEqual(result, parent_value)
             else:

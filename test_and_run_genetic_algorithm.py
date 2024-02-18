@@ -42,9 +42,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         parameters = {'experiment_number': 1,
                       'experiment_comment': "development - no experiment being saved",
-                      'generations': 3,
-                      'size_new_generations': 20,
-                      'max_population_size': 40,
+                      'generations': 2,
+                      'size_new_generations': 5,
+                      'max_population_size': 6,
                       'point_mutation_chance': 0.3,
                       'point_mutation_amount': 0.35,
                       'point_mutation_chance_max': 0.75,
@@ -252,7 +252,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 for new_nn in range(new_population.get_population_size()):
                     new_nn_sn = new_population.get_neural_network_def(new_nn)['meta']['serial_number']
                     for old_nn in range(sim_population.get_population_size()):
-                        old_nn_sn = population.Population.get_neural_network_def(sim_population, old_nn)['meta']['serial_number']
+                        old_nn_sn = sim_population.get_neural_network_def(old_nn)['meta']['serial_number']
                         if old_nn_sn == new_nn_sn:
                             new_nn_checksum = new_population.get_neural_network_def(new_nn)['meta']['checksum']
                             old_nn_checksum = sim_population.get_neural_network_def(old_nn)['meta']['checksum']

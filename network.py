@@ -1,6 +1,6 @@
 import genome
 import keras
-from copy import deepcopy
+# from copy import deepcopy
 from keras import layers
 
 class Network:

@@ -3,10 +3,10 @@ import unittest
 import population
 import simulation_utest
 from copy import deepcopy
-import random
+# import random
 import numpy as np
 import reporting
-from operator import itemgetter
+# from operator import itemgetter
 import breeding
 
 class TestGeneticAlgorithm(unittest.TestCase):

@@ -108,7 +108,6 @@ class Breeding(unittest.TestCase):
             child_nn_definition["hidden_layers"][layer]["type"] = self.c_and_m("definition", child_nn_definition["hidden_layers"][layer]["type"], parent_2_nn_definition["hidden_layers"][layer]["type"], point_mutation_chance, point_mutation_amount, fitness_bias)
             
             # Validate that all the floats are within the acceptable ranges.
-            # print(child_nn_definition["hidden_layers"][layer]["activation"])
             self.assertIsInstance(child_nn_definition["hidden_layers"][layer]["type"], float)
             self.assertIsInstance(child_nn_definition["hidden_layers"][layer]["activation"], float)
             self.assertGreaterEqual(child_nn_definition["hidden_layers"][layer]["type"], 0.0)
@@ -124,7 +123,6 @@ class Breeding(unittest.TestCase):
             
                
         # Validate that all the floats are within the acceptable ranges.
-        # print(child_nn_definition["output"]["type"])
         self.assertIsInstance(child_nn_definition["output"]["type"], float)
         self.assertIsInstance(child_nn_definition["output"]["activation"], float)
         self.assertGreaterEqual(child_nn_definition["output"]["type"], 0.0)
@@ -132,23 +130,12 @@ class Breeding(unittest.TestCase):
         self.assertGreaterEqual(child_nn_definition["output"]["activation"], 0.0)
         self.assertLessEqual(child_nn_definition["output"]["activation"], 1.0)   
 
-        # At this point:
-        # The code above is still assuming that only one hidden layer exists. **************************
-        # All the weights of the hidden layer are crossed over and mutated.
-        # All the floats of the hidden layer are crossed over and mutated.
-        # All the weights of the output layer are **** NOT **** crossed over and mutated. ****************
-        # All the floats of the output layer are crossed over and mutated.
-        # print("Output of the child definition")
-        # print(child_nn_definition)
-        
-        
         # This will retrieve the last elements of the layers information, which will be the output layer
         # Continues to assume there is only one hidden layer which needs to be changed later on.
         # This layer also has 512 weights #####################################################################################
         parent_1_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_1, 2)
         parent_2_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_2, 2)
                 
-        
         # Create the child output layer weights as a full copy of parent 1. Then if necessary, replace with values from parent 2, thus achieving crossover breeding.
         child_network_output_weights_bias = deepcopy(parent_1_nn_output_weights_bias)
         child_network_output_weights = child_network_output_weights_bias[0]       ##### currently assuming that there is only one hidden layer
@@ -175,28 +162,18 @@ class Breeding(unittest.TestCase):
         # Write the new weights back to the weights+biases variable, for later writing to the network object.            
         child_network_output_weights_bias[0] = child_network_output_weights
         
-       
+        # Get the parent serial numbers and write everything to the child definition
         parent_1_sn = parent_1_nn_definition['meta']['serial_number']
         parent_2_sn = parent_2_nn_definition['meta']['serial_number']
-        
-        # print(f"\n\np1 number: {parent_1}, p1_sn: {parent_1_sn}, p2 number: {parent_2}, p2_sn: {parent_2_sn}\n\n")
         child_nn_obj = sim_population.create_nn(serial_number, child_nn_definition, child_network_weights_bias, child_network_output_weights_bias, parent_1_sn, parent_2_sn)
         
         # Do some assertions to confirm that the child nn is properly defined and populated
-        # self.assertIsInstance(child_nn_obj.get_network_dna()["meta"]["serial_number"], serial_number)
-        # print("DNA from the created nn obj")
-        # print(child_nn_obj.get_network_dna())
         self.assertIsInstance(child_nn_obj.get_network_dna()["inputs"], int)
         self.assertIsNot(len(child_nn_obj.get_network_dna()["hidden_layers"]), 0)
         self.assertIsInstance(child_nn_obj.get_network_dna()["output"], dict)
         self.assertIsNot(child_nn_obj.checksum_weights(1), 0)
         self.assertIsNot(child_nn_obj.checksum_weights(2), 0)
-        
-        # # And add it to the new population
-        # new_population.add_nn(child_nn_obj)
-        # serial_number += 1
     
-        # self.assertIsInstance(new_population, population.Population)
         return child_nn_obj
     
     def carry_over():

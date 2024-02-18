@@ -182,14 +182,14 @@ class Breeding(unittest.TestCase):
     def c_and_m(self, weight_or_def, child_value, parent_value, point_mutation_chance, point_mutation_amount, fitness_bias = 0):
         # Weights have a range from -1.0 to 1.0
         # Definitions have a range from 0.0 to 1.0
+        # Make sure the type was sent properly
+        self.assertIn(weight_or_def, ["weight", "definition"])
         if weight_or_def == "weight":
             range_min = -1.0
             range_max = 1.0
         elif weight_or_def == "definition":
             range_min = 0.0
-            range_max = 1.0
-        else:
-            quit()
+            range_max = 1.0            
         
         # Choose either the child value, which is currently a copy of parent_1,
         #  or the parent_2 value

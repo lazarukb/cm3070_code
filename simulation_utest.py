@@ -215,9 +215,9 @@ class Simulation(unittest.TestCase):
             fitnesses.append(sim_population.get_nn_fitness(i))
         
         # Beginning of stats to the screen.
-        print(f"Number of networks in this generation: {len(fitnesses)}. ", end = "")
-        print(f"Average fitness of this generation: {sum(fitnesses) / len(fitnesses)}. ", end = "")
-        print(f"Max fitness of this generation: {max(fitnesses)}")
+        print(f"Network count: {len(fitnesses)}. ", end = "")
+        print(f"Average fitness: {sum(fitnesses) / len(fitnesses)}. ", end = "")
+        print(f"Max fitness: {max(fitnesses)}")
         
         
         

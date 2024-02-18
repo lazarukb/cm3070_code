@@ -13,38 +13,43 @@ class TestGeneticAlgorithm(unittest.TestCase):
     
     # Initial processing flow of this code was derived, but also fully re-typed
     # # and edited, from that presented in lectures in CM3020.
-    def testGeneticAlgorithm(self):      
+    def testGeneticAlgorithm(self, parameters):      
         # Initialisation
         serial_number = 0
         experiment_report = {}
         experiment_results = []
+
+        print(f"\n")
+        for p in parameters:
+            print(f"{p}: {parameters[p]}")            
+        print(f"\n")
        
-        # Number of steps to be saved to the input tensor directly affects the 
-        #  inputs to the nn. The size of the inputs will be steps * 7
-        #  (one for each action, + the choice + the result) + the current
-        #  action space length of 5, as described in simulation.py.
-        steps_to_retain = 10
-        inputs_size = (steps_to_retain * 7) + 5
+        # # Number of steps to be saved to the input tensor directly affects the 
+        # #  inputs to the nn. The size of the inputs will be steps * 7
+        # #  (one for each action, + the choice + the result) + the current
+        # #  action space length of 5, as described in simulation.py.
+        # steps_to_retain = 10
+        # inputs_size = (steps_to_retain * 7) + 5
         
-        parameters = {'experiment_number': 1,
-                      'experiment_comment': "development - no experiment being saved",
-                      'generations': 10,
-                      'size_new_generations': 10,
-                      'max_population_size': 11,
-                      'point_mutation_chance': 0.3,
-                      'point_mutation_amount': 0.35,
-                      'point_mutation_chance_max': 0.75,
-                      'point_mutation_amount_max': 0.5,
-                      'point_mutation_scalar': 5,
-                      'force_random_choice': False,
-                      'force_pickup': False,
-                      'game': 'coin_collector_5',
-                      'steps_to_retain': steps_to_retain,
-                      'inputs_size': inputs_size,
-                      'fitness_bias_scalar': 0.25,
-                      'failed_step_reward': 0,
-                      'valid_step_reward': 5,
-                      'chain_rewards': False}
+        # parameters = {'experiment_number': 1,
+        #               'experiment_comment': "development - no experiment being saved",
+        #               'generations': 10,
+        #               'size_new_generations': 10,
+        #               'max_population_size': 11,
+        #               'point_mutation_chance': 0.3,
+        #               'point_mutation_amount': 0.35,
+        #               'point_mutation_chance_max': 0.75,
+        #               'point_mutation_amount_max': 0.5,
+        #               'point_mutation_scalar': 5,
+        #               'force_random_choice': False,
+        #               'force_pickup': False,
+        #               'game': 'coin_collector_5',
+        #               'steps_to_retain': steps_to_retain,
+        #               'inputs_size': inputs_size,
+        #               'fitness_bias_scalar': 0.25,
+        #               'failed_step_reward': 0,
+        #               'valid_step_reward': 5,
+        #               'chain_rewards': False}
         
         # Defining some globals - may reset these throughout the code to passing the parameters dict instead, may not ... --------------------------------------
         generations = parameters['generations']
@@ -62,11 +67,12 @@ class TestGeneticAlgorithm(unittest.TestCase):
         failed_step_reward = parameters['failed_step_reward']
         valid_step_reward = parameters['valid_step_reward']
         chain_rewards = parameters['chain_rewards']
+        steps_to_retain = parameters['steps_to_retain']
         
+        # Calculated variables derived from the parameters
+        inputs_size = (steps_to_retain * 7) + 5
         
-        # possibly mod this to read experiments from a CSV and then iterate through them.
-        # LAST
-                       
+                               
         # Early test of the directory structure to ensure nothing is overwritten.
         # If this fails then the directory already exists and we don't want to
         #  overwrite previous work, so fail out.
@@ -91,7 +97,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Run the networks through the gym and gather their fitness scores
         for iteration in range(generations):
-            print(f"Beginning of evaluation for generation {iteration}, ", end = "")
+            print(f"Beginning of generation {iteration}, ", end = "")
             
             # Prepare for reporting
             experiment_results = {'after_evaluation': [], 'after_carryover': []}
@@ -109,8 +115,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
             sim_population.create_fitness_map()
             
             # Breed, cross-over, and mutate the population to produce a new population
-            print(f"All networks have been run through the Textworld. Proceed with breeding.")
-            
+            # print(f"All networks have been run through the Textworld. Proceed with breeding.")
             # Create the population instance target for the children
             new_population = population.Population()
             

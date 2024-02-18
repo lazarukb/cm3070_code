@@ -145,6 +145,7 @@ class Reporting():
                 f.write(ele + ",")
             f.write("\n")
             
+        sim_avg_fitness = 0
         for gen in range(len(report['generations'])):
             fitnesses = []
             # Calculate and write the output for each network in each generation, after evaluation
@@ -158,7 +159,11 @@ class Reporting():
             # Summarise metrics
             max_fitness = max(fitnesses)
             avg_fitness = round(sum(fitnesses) / num_nn, 2)
+            sim_avg_fitness += avg_fitness
             
             with open("experiments/" + str(fulldir) + "/generation_summary.csv", 'a') as f:
                 f.write(f"{gen},{num_nn},{max_fitness},{avg_fitness}")
                 f.write("\n")
+                
+        sim_avg_fitness = round(sim_avg_fitness / len(report['generations']),4)
+        os.mkdir("experiments/" + str(fulldir) + "/!-- simulation average fitness -- " + str(sim_avg_fitness))

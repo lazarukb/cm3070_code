@@ -199,7 +199,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
 
 # Run 
-unittest.main()   
+# unittest.main()   
         
         
             # There is a microscopically small chance that the child definition is still the same as parent_1, or somehow all replaced with parent_2.

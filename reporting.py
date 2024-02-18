@@ -170,3 +170,5 @@ class Reporting():
                 
         sim_avg_fitness = round(sim_avg_fitness / len(report['generations']),4)
         os.mkdir("experiments/" + str(fulldir) + "/!-- simulation average fitness -- " + str(sim_avg_fitness))
+        
+        return sim_avg_fitness

@@ -202,9 +202,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # The simulation is complete here
         # Export the reporting
-        reporting.Reporting.output_to_csv(parameters, experiment_report)
+        sim_avg_fitness = reporting.Reporting.output_to_csv(parameters, experiment_report)
         
-        return
+        return sim_avg_fitness
         
 
 # Run 

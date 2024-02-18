@@ -1,22 +1,25 @@
 import test_and_run_genetic_algorithm
 import datetime
+import os
         
 def main(parameters):
     print("Hello World!")
     simulation = test_and_run_genetic_algorithm.TestGeneticAlgorithm()
     # run
-    simulation.testGeneticAlgorithm(parameters)
-    peak_fit = None
-    avg_fit = None
+    avg_fit = simulation.testGeneticAlgorithm(parameters)
+    # peak_fit = None
+    # avg_fit = None
     
-    return peak_fit, avg_fit
+    return avg_fit
     
 
 if __name__ == "__main__":
     
+    max_fitness = []
+    
     # Defaults
     parameters = {
-        'experiment_number': '1020',
+        'experiment_number': '1030',
         'subfolder': '',
         'experiment_comment': "Testing steps to retain and chain rewards",
         'generations': 10,
@@ -49,7 +52,7 @@ if __name__ == "__main__":
     # This is exponential so do be careful with how many choices there are
     # Ranges
     parameter_ranges = {
-        'generations': [5],
+        'generations': [3],
         'size_new_generations': [10],
         'max_population_size': [15],
         'point_mutation_chance': [0.3],
@@ -58,7 +61,7 @@ if __name__ == "__main__":
         'point_mutation_amount_max': [0.5],
         'point_mutation_scalar': [5],
         'game': ['coin_collector_5'],
-        'steps_to_retain': [3, 20, 50],
+        'steps_to_retain': [3, 50],
         'fitness_bias_scalar': [0.25],
         'failed_step_reward': [-1],
         'valid_step_reward': [5],
@@ -104,10 +107,29 @@ if __name__ == "__main__":
                                                                     # Get the timestamp to name the subfolder
                                                                     parameters['subfolder'] = str(datetime.datetime.now().timestamp())
                                                                     # And run the experiment
-                                                                    peak_fit, avg_fit = main(parameters)
+                                                                    avg_fit = main(parameters)
                                                                     
-                                                                    print(f"peak_fit: {peak_fit}, avg_fit: {avg_fit}")
-                                                        
+                                                                    # Check max
+                                                                    max_fitness.append([parameters['subfolder'], avg_fit])
+                                                                    # print(max_fitness)
+                                                                    
+
+    
+    # Report the folders by highest average fitnesses
+    most_fit_folders = sorted(max_fitness, key=lambda x: x[1], reverse=True)
+    print(most_fit_folders)
+    
+    # Now output this list to disk in the root of the experiment folder
+    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary.csv", 'w') as f:
+        header = ("subfolder","fitness",)
+        for ele in header:
+            f.write(ele + ",")
+        f.write("\n")
+        
+        for line in most_fit_folders:
+            f.write(f"{str(line[0])},{str(line[1])},\n")
+        f.write("\n")
+                                 
     # Per experiment to change the parameters
     # Number of steps to be retained to the input tensor directly affects the 
     #  inputs to the nn. 

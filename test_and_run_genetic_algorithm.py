@@ -9,42 +9,28 @@ import reporting
 from operator import itemgetter
 import breeding
 
-# So this is the main test-and-run ... all the unittesting stays in here.  Remove from elsewhere.
-
-
-# To remove unittest, if eventually decided ...
-# Make sure the files are open (maybe, but just to be sure)
-# Remove the unittest.TestCase argument and unittest.main() (if exists) calls from the module
-# Rename the filename of the class module file
-
 class TestGeneticAlgorithm(unittest.TestCase):
     
-    # def __init__(self):
-    
-    # Code derived, but also fully re-typed and edited, from that presented in lectures in CM3020
-    def testGeneticAlgorithm(self):
-        # Define the population, simulation, and evolution parameters
-        # experiment_number = 1
-        # This is also written as a folder in the experiment folder for quick 
-        #   reference, so keep it short.
-        # experiment_comment = "development - no experiment being saved"
-        
+    # Initial processing flow of this code was derived, but also fully re-typed
+    # # and edited, from that presented in lectures in CM3020.
+    def testGeneticAlgorithm(self):      
         # Initialisation
         serial_number = 0
         experiment_report = {}
         experiment_results = []
        
-        # Number of steps to be saved to the input tensor directly affects the inputs to the nn.
-        # So the inputs needs to be removed from the base genome as it's variable now.
-        # And the size of the inputs will be steps * 7 (one for each action, + the choice + the result) + the current action space of 5.
-        steps_to_retain = 5
+        # Number of steps to be saved to the input tensor directly affects the 
+        #  inputs to the nn. The size of the inputs will be steps * 7
+        #  (one for each action, + the choice + the result) + the current
+        #  action space length of 5, as described in simulation.py.
+        steps_to_retain = 10
         inputs_size = (steps_to_retain * 7) + 5
         
         parameters = {'experiment_number': 1,
                       'experiment_comment': "development - no experiment being saved",
-                      'generations': 2,
-                      'size_new_generations': 5,
-                      'max_population_size': 6,
+                      'generations': 10,
+                      'size_new_generations': 10,
+                      'max_population_size': 11,
                       'point_mutation_chance': 0.3,
                       'point_mutation_amount': 0.35,
                       'point_mutation_chance_max': 0.75,
@@ -55,7 +41,10 @@ class TestGeneticAlgorithm(unittest.TestCase):
                       'game': 'coin_collector_5',
                       'steps_to_retain': steps_to_retain,
                       'inputs_size': inputs_size,
-                      'fitness_bias_scalar': 0.25}
+                      'fitness_bias_scalar': 0.25,
+                      'failed_step_reward': 0,
+                      'valid_step_reward': 5,
+                      'chain_rewards': False}
         
         # Defining some globals - may reset these throughout the code to passing the parameters dict instead, may not ... --------------------------------------
         generations = parameters['generations']
@@ -70,16 +59,17 @@ class TestGeneticAlgorithm(unittest.TestCase):
         force_pickup = parameters['force_pickup']
         game = parameters['game']
         fitness_bias_scalar = parameters['fitness_bias_scalar']
-        # steps_to_retain = parameters['steps_to_retain']
-        # inputs_size = parameters['inputs_size']
-
+        failed_step_reward = parameters['failed_step_reward']
+        valid_step_reward = parameters['valid_step_reward']
+        chain_rewards = parameters['chain_rewards']
+        
         
         # possibly mod this to read experiments from a CSV and then iterate through them.
         # LAST
-               
-        # helpers_utest.TestHelpers.testVerifyParameters(self)
-        
+                       
         # Early test of the directory structure to ensure nothing is overwritten.
+        # If this fails then the directory already exists and we don't want to
+        #  overwrite previous work, so fail out.
         reporting.Reporting.create_folders(parameters)
         
         # Create the initial population of randomised neural network definitions
@@ -89,27 +79,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
         self.assertIsInstance(sim_population, population.Population)
-        # self.assertEqual(population.Population.get_population_size(sim_population), size_new_generations)
         self.assertEqual(sim_population.get_population_size(), size_new_generations)
         
-        # Document the initial state
-        # experiment_report['parameters'] = {
-        #     # 'experiment_comment': experiment_comment,
-        #     'generations': generations, 
-        #     'size_new_generations': size_new_generations, 
-        #     'max_population_size': max_population_size,
-        #     'point_mutation_chance': point_mutation_chance,
-        #     'point_mutation_amount': point_mutation_amount,
-        #     'force_random_choice': force_random_choice,
-        #     'force_pickup': force_pickup,
-        #     'game': game,
-        #     'point_mutation_chance_max': point_mutation_chance_max,
-        #     'point_mutation_amount_max':point_mutation_amount_max,
-        #     'point_mutation_scalar': point_mutation_scalar,
-        #     'steps_to_retain': steps_to_retain,
-        #     'inputs_size': inputs_size
-        #     }
-        
+        # Prepare reporting
         experiment_report['parameters'] = parameters
         experiment_report['initial_population'] = reporting.Reporting.census(sim_population)
         experiment_report['generations'] = []
@@ -128,64 +100,20 @@ class TestGeneticAlgorithm(unittest.TestCase):
             self.assertIsInstance(sim_population, population.Population)
             
             # run the networks through the game, which modifies the components of the simulation_population object
-            sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup, steps_to_retain)
+            sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup, steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards)
             
             # Capture the state of the population with fitnesses after they've gone through the evaluation
             experiment_results['after_evaluation'] = reporting.Reporting.census(sim_population)
             
-            # get the fitnesses for each network
-            # networks_count = population.TestPopulation.get_population_size(simulation_population)
-            # all_fitnesses = []
-            # for i in range(networks_count):
-            #     all_fitnesses.append(population.TestPopulation.get_nn_fitness(simulation_population, i))
-            
-            # generate and display statistics for the generation
-            
-            # print(f"create and test the fitness map ", end = "")
-            # create the fitness map for this population
+            # Create the fitness map for this population
             sim_population.create_fitness_map()
-            
-            # Test the fitness map for a minimum of two networks with > 0 fitness
-            # Take the value of the last element in the map, which is guaranteed to be the largest because of how the map is created.
-            # Now divide that by the length of the list.
-            # Then take the average of all the values in the list.
-            # If these are equal then there are 0 or 1 networks with a fitness.
-            # No breeding can happen. Throw out the generation and randomise a new one.
-            # If these are not equal, we have at least two individuals, so breeding can commence.
-            # print(f"Testing the fitness map")
-            # fitness_map = sim_population.get_fitness_map()
-            # marker1_max_fitness = max(fitness_map) / len(fitness_map)
-            # marker2_avg_fitness = sum(fitness_map) / len(fitness_map)
-            
-            # print(fitness_map)
-            # print(f"marker1_max_fitness: {marker1_max_fitness}")
-            # print(f"marker2_avg_fitness: {marker2_avg_fitness}")
-            
-                    
-            # capture the DNA of the elite network from this generation
-            
-            # update, if necessary, the elite network from this simulation
-            
-            
-            # Validations of the current population before we get into breeding
-            # print("\nValidations")
-            # print("1. Serial numbers")
-            
-            # for i in range(init_population_size):
-            #     print(population.Population.get_neural_network_def(sim_population, i)["meta"])
-            #     print(population.Population.get_nn_fitness(sim_population, i))
-            #     print(population.Population.get_neural_network_def(sim_population, i)["input"])
-            #     print(population.Population.get_weight_bias_definitions(sim_population, i, 1)[0])
-                        
-            # Create new networks through breeding two randomly selected parent networks, and incorporating mutation
-            # if marker1_max_fitness != marker2_avg_fitness:
-            
-            # Start with picking the two parents and sending those to a helper, returning the new child.
             
             # Breed, cross-over, and mutate the population to produce a new population
             print(f"All networks have been run through the Textworld. Proceed with breeding.")
+            
             # Create the population instance target for the children
             new_population = population.Population()
+            
             # Create an instance to handle the breeding and evolution work
             # This should probably be static. Look into it and fix. -------------------------------------------------------------------------------------------------------
             breeder = breeding.Breeding()
@@ -199,18 +127,14 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 serial_number += 1
 
             
-            # If you're going to retain the most fit individual(s) from the previous generation, here is where that should happen
-            # select the most fit individuals from the existing generation and move them into the new generation
+            # Carryover - retaining the most fit networks from the previous generation
             if size_new_generations != max_population_size:
-                # Get the number of networks to carry over from the old generation to the new
-                # But cap at the number of networks in the old generation.
-                
-                print(f"\nProduce carryover from the old generation to the new. At most ", end = "")
-                # size_prev_gen = population.Population.get_population_size(sim_population)
+                # Get the number of networks to carry over from the old
+                #  generation to the new, capped at the number of networks
+                #  in the old generation.
                 size_prev_gen = sim_population.get_population_size()
                 carryover_count = max_population_size - size_new_generations
                 carryover_count = min(carryover_count, size_prev_gen)
-                print(f"{carryover_count} networks from the old generation could import to the new generation.")
                 
                 # Gather the fitnesses of the previous generation, and use numpy
                 #  to create a list sorting the element positions by fitness
@@ -218,21 +142,19 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 for i in range(size_prev_gen):
                     all_fitnesses_prev_gen.append(sim_population.get_nn_fitness(i))
                 self.assertEqual(len(all_fitnesses_prev_gen), size_prev_gen)
-                
                 all_fitnesses_prev_gen = np.asarray(all_fitnesses_prev_gen)
                 most_fit_networks = np.argsort(all_fitnesses_prev_gen)
                 most_fit_networks_desc = most_fit_networks[::-1].tolist()
 
                 # Then iterate through the sorted list to copy the specified
                 #  count of fit networks to the new generation, unless they have
-                #  a minimum fitness.
+                #  a minimum fitness, in which case skip them, no point.
                 for i in range(carryover_count):
                     if sim_population.get_nn_fitness(most_fit_networks_desc[i]) > 1:
+                        # Build the definition of a network from the candidate network
                         import_nn_definition = {}
                         import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
-                        self.assertIsInstance(import_nn_definition, dict)                    
-                        # import_nn_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 1)
-                        # import_nn_output_weights_bias = population.Population.get_weight_bias_definitions(sim_population, most_fit_networks_desc[i], 2)
+                        self.assertIsInstance(import_nn_definition, dict)
                         import_nn_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 1)
                         import_nn_output_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 2)
                         import_nn_serial = import_nn_definition['meta']['serial_number']
@@ -241,8 +163,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                         self.assertIsInstance(import_nn_weights_bias, list)
                         self.assertIsInstance(import_nn_output_weights_bias, list)
                         
-                        ############################
-                        ### this is wrong. should not be using the sim_population obecjt.  Also see the child_nn_obj creation around line 356.
+                        # Create the object from the definition and add to the new_population
                         import_nn_obj = sim_population.create_nn(import_nn_serial, import_nn_definition, import_nn_weights_bias, import_nn_output_weights_bias, import_nn_parent_1, import_nn_parent_2)
                         new_population.add_nn(import_nn_obj)
                            
@@ -263,25 +184,22 @@ class TestGeneticAlgorithm(unittest.TestCase):
             new_population = None
             self.assertIsNone(new_population)
             
-            # Capture the state of the population after they've gone
-            #  through the breeding and carryover
+            # Report the state of the population after they've gone
+            #  through the breeding and carryover.
             experiment_results['after_carryover'] = reporting.Reporting.census(sim_population)
             experiment_report['generations'].append(experiment_results)
             
             print("Generation is complete.")
         
+        # The simulation is complete here
         # Export the reporting
         reporting.Reporting.output_to_csv(parameters, experiment_report)
             
         return
         
 
-# Run
-        
-unittest.main()       
-        
-        
-        
+# Run 
+unittest.main()   
         
         
             # There is a microscopically small chance that the child definition is still the same as parent_1, or somehow all replaced with parent_2.

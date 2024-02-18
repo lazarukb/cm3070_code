@@ -9,19 +9,7 @@ import random
 
 # this code heavily derived from code presented in lectures in CM3020
 class Genome():
-    def __init__(self):
-        pass
-        # self.gene_specification = {
-        #     "inputs": 1,
-        #     "hidden_type": 1,
-        #     "hidden_neurons_min": 512,
-        #     "hidden_neurons_max": 512,
-        #     "hidden_activation": 1,
-        #     "outputs": 3,
-        #     "output_type": 1,
-        #     "output_activation": 1            
-        # }
-    
+   
     # This one is properly static as this is effectively a data class, never itself instantiated.
     @staticmethod
     def create_random_genome(specification, hidden_layers_count):
@@ -53,10 +41,8 @@ class Genome():
     '''Defines the components of the input, hidden, and output layers, along with their maximum values'''
     # This method heavily inspired from CM3020 lectures
     @staticmethod
-    # def get_gene_specifications(self):
     def get_gene_specifications():
         gene_specification = {
-            # "inputs": 40,
             "hidden_type": 1,
             "hidden_neurons_min": 512,
             "hidden_neurons_max": 512,

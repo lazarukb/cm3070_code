@@ -66,7 +66,6 @@ class Reporting():
             f.write("\n")
        
         # Write the details for each network in each generation
-        # print(report['initial_population'])
         with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'w') as f:
             header = ("generation","stage","#","serial_number","checksum","parent_1","parent_2","hidden_weights","output_weights","hidden_checksum","output_checksum","input","hidden_type","hidden_neurons","hidden_activation","output_type","output_count","output_activation","fitness")
             for ele in header:
@@ -78,24 +77,19 @@ class Reporting():
                 f.write(f"{nn},")
                 for key in report['initial_population'][nn][0]['meta']:
                     f.write(f"{report['initial_population'][nn][0]['meta'][key]},")
-                # f.write(f"{report['initial_population'][nn][0]['meta']},")
                 f.write(f"{report['initial_population'][nn][0]['inputs']},")
                 for key in report['initial_population'][nn][0]['hidden_layers'][0]:
                     f.write(f"{report['initial_population'][nn][0]['hidden_layers'][0][key]},")
-                # f.write(f"{report['initial_population'][nn][0]['hidden_layers']},")
                 for key in report['initial_population'][nn][0]['output']:
                     f.write(f"{report['initial_population'][nn][0]['output'][key]},")
-                # f.write(f"{report['initial_population'][nn][0]['output']},")
                 f.write(f"{report['initial_population'][nn][1]}\n")
 
         
         for gen in range(len(report['generations'])):
             # Write the output for each network in each generation
             with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'a') as f:
-                # for gen in range(len(report['generations'])):
                 # After evaluation
                 for nn in range(len(report['generations'][gen]['after_evaluation'])):
-                    # f.write(f"{gen},after_evaluation,{nn}: {report['generations'][gen]['after_evaluation'][nn]}\n")
                     f.write(f"{gen},after_evaluation,{nn},")
                     for key in report['generations'][gen]['after_evaluation'][nn][0]['meta']:
                         f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['meta'][key]},")
@@ -109,10 +103,8 @@ class Reporting():
                 
                 # After carryover
             with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'a') as f:
-                # for gen in range(len(report['generations'])):
                 # After evaluation
                 for nn in range(len(report['generations'][gen]['after_carryover'])):
-                    # f.write(f"{gen},after_evaluation,{nn}: {report['generations'][gen]['after_evaluation'][nn]}\n")
                     f.write(f"{gen},after_carryover,{nn},")
                     for key in report['generations'][gen]['after_carryover'][nn][0]['meta']:
                         f.write(f"{report['generations'][gen]['after_carryover'][nn][0]['meta'][key]},")
@@ -139,7 +131,6 @@ class Reporting():
             
         for gen in range(len(report['generations'])):
             fitnesses = []
-            # print(f"{gen}")
             # Calculate and write the output for each network in each generation, after evaluation
             num_nn = len(report['generations'][gen]['after_evaluation'])
             
@@ -152,7 +143,6 @@ class Reporting():
             max_fitness = max(fitnesses)
             avg_fitness = round(sum(fitnesses) / num_nn, 2)
             
-            # print(f"{num_nn}")
             with open("experiments/" + str(subdir) + "/generation_summary.csv", 'a') as f:
                 f.write(f"{gen},{num_nn},{max_fitness},{avg_fitness}")
                 f.write("\n")

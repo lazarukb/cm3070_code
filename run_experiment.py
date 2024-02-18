@@ -6,15 +6,19 @@ def main(parameters):
     simulation = test_and_run_genetic_algorithm.TestGeneticAlgorithm()
     # run
     simulation.testGeneticAlgorithm(parameters)
+    peak_fit = None
+    avg_fit = None
+    
+    return peak_fit, avg_fit
     
 
 if __name__ == "__main__":
     
     # Defaults
     parameters = {
-        'experiment_number': '1000',
+        'experiment_number': '1020',
         'subfolder': '',
-        'experiment_comment': "development - no experiment being saved",
+        'experiment_comment': "Testing steps to retain and chain rewards",
         'generations': 10,
         'size_new_generations': 10,
         'max_population_size': 11,
@@ -45,7 +49,7 @@ if __name__ == "__main__":
     # This is exponential so do be careful with how many choices there are
     # Ranges
     parameter_ranges = {
-        'generations': [5, 10],
+        'generations': [5],
         'size_new_generations': [10],
         'max_population_size': [15],
         'point_mutation_chance': [0.3],
@@ -54,13 +58,13 @@ if __name__ == "__main__":
         'point_mutation_amount_max': [0.5],
         'point_mutation_scalar': [5],
         'game': ['coin_collector_5'],
-        'steps_to_retain': [20],
+        'steps_to_retain': [3, 20, 50],
         'fitness_bias_scalar': [0.25],
-        'failed_step_reward': [-1, 0],
-        'valid_step_reward': [1, 5],
+        'failed_step_reward': [-1],
+        'valid_step_reward': [5],
         'force_random_choice': [False],
         'force_pickup': [False],
-        'chain_rewards': [False]
+        'chain_rewards': [False, True]
     }
     
     # Modification loops
@@ -100,7 +104,9 @@ if __name__ == "__main__":
                                                                     # Get the timestamp to name the subfolder
                                                                     parameters['subfolder'] = str(datetime.datetime.now().timestamp())
                                                                     # And run the experiment
-                                                                    main(parameters)
+                                                                    peak_fit, avg_fit = main(parameters)
+                                                                    
+                                                                    print(f"peak_fit: {peak_fit}, avg_fit: {avg_fit}")
                                                         
     # Per experiment to change the parameters
     # Number of steps to be retained to the input tensor directly affects the 

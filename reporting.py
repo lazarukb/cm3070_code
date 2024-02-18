@@ -46,6 +46,7 @@ class Reporting():
         #  already exists, to accommodate the subdirectories.
         try:
             os.mkdir("experiments/" + str(maindir))
+            os.mkdir("experiments/" + str(maindir) + "/!-- " + str(comment))
         except:
             print(f"\n\n -----------------------------------------------------\n")
             print(f"Note, the main directory {maindir} already exists. " +
@@ -56,7 +57,6 @@ class Reporting():
         #  the data is stored.
         try:
             os.mkdir("experiments/" + str(maindir) + "/" + str(subdir))
-            os.mkdir("experiments/" + str(fulldir) + "/!-- " + str(comment))
         except:
             print(f"\n\nFATAL. The experiment directory {fulldir} already exists.\n\n")
             quit(1)
@@ -66,6 +66,7 @@ class Reporting():
         maindir = parameters['experiment_number']
         subdir = parameters['subfolder']
         fulldir = maindir + "/" + subdir
+        
         if subdir == 0 or maindir == 0:
             return
         # Assumes that the subdirectory exists as the create_folders function was called earlier.      
@@ -87,6 +88,8 @@ class Reporting():
             for ele in header:
                 f.write(ele + ",")
             f.write("\n")
+            
+            # Write the initial population details
             for nn in range(len(report['initial_population'])):
                 # Add filler for initial population
                 f.write("initial, initial,")
@@ -100,11 +103,11 @@ class Reporting():
                     f.write(f"{report['initial_population'][nn][0]['output'][key]},")
                 f.write(f"{report['initial_population'][nn][1]}\n")
 
-        
+
+        # Write the output for each network in each generation
         for gen in range(len(report['generations'])):
-            # Write the output for each network in each generation
             with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'a') as f:
-                # After evaluation
+                # Write the after evaluation details
                 for nn in range(len(report['generations'][gen]['after_evaluation'])):
                     f.write(f"{gen},after_evaluation,{nn},")
                     for key in report['generations'][gen]['after_evaluation'][nn][0]['meta']:
@@ -117,9 +120,9 @@ class Reporting():
                         f.write(f"{report['generations'][gen]['after_evaluation'][nn][0]['output'][key]},")
                     f.write(f"{report['generations'][gen]['after_evaluation'][nn][1]}\n")
                 
-                # After carryover
+    
             with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'a') as f:
-                # After evaluation
+                # Write the after carryover details
                 for nn in range(len(report['generations'][gen]['after_carryover'])):
                     f.write(f"{gen},after_carryover,{nn},")
                     for key in report['generations'][gen]['after_carryover'][nn][0]['meta']:

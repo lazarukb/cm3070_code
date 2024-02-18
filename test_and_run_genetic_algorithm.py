@@ -15,6 +15,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
     # # and edited, from that presented in lectures in CM3020.
     def testGeneticAlgorithm(self, parameters):      
         # Initialisation
+        max_avg_fitness = ''
         serial_number = 0
         experiment_report = {}
         experiment_results = []
@@ -202,7 +203,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         # The simulation is complete here
         # Export the reporting
         reporting.Reporting.output_to_csv(parameters, experiment_report)
-            
+        
         return
         
 

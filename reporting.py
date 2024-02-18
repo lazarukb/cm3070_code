@@ -27,37 +27,53 @@ class Reporting():
     
     def create_folders(parameters):
         comment = parameters['experiment_comment']
-        subdir = parameters['experiment_number']
-        if subdir == 0:
+        maindir = parameters['experiment_number']
+        subdir = parameters['subfolder']
+        fulldir = maindir + "/" + subdir
+        if subdir == 0 or maindir == 0:
             return
         # Make the report directory
         
-        if subdir == 1:
+        if maindir == 1 or subdir == 1:
             # remove the subdir and contents as this is the testing directory
             # intended for when the output should be created, not not retained.
             try:
-                shutil.rmtree("experiments/" + str(subdir))
+                shutil.rmtree("experiments/" + str(fulldir))
             except:
                 pass
-            
+        
+        # First, the main experiment directory which needs to be skipped if it
+        #  already exists, to accommodate the subdirectories.
         try:
-            os.mkdir("experiments/" + str(subdir))
-            os.mkdir("experiments/" + str(subdir) + "/!-- " + str(comment))
+            os.mkdir("experiments/" + str(maindir))
         except:
-            print(f"\n\nFATAL. The experiment directory {subdir} already exists.\n\n")
+            print(f"\n\n -----------------------------------------------------\n")
+            print(f"Note, the main directory {maindir} already exists." +
+                "Subfolders are being mixed with new and previous data.")
+            print(f"\n -----------------------------------------------------\n")
+
+        # But subfolders must not be overwritten if they exist as this is where
+        #  the data is stored.
+        try:
+            os.mkdir("experiments/" + str(maindir) + "/" + str(subdir))
+            os.mkdir("experiments/" + str(fulldir) + "/!-- " + str(comment))
+        except:
+            print(f"\n\nFATAL. The experiment directory {fulldir} already exists.\n\n")
             quit(1)
         
     
     def output_to_csv(parameters, report):
-        subdir = parameters['experiment_number']
-        if subdir == 0:
+        maindir = parameters['experiment_number']
+        subdir = parameters['subfolder']
+        fulldir = maindir + "/" + subdir
+        if subdir == 0 or maindir == 0:
             return
         # Assumes that the subdirectory exists as the create_folders function was called earlier.      
         
         # Write the experiment parameters  
         keys = report['parameters'].keys()
         values = report['parameters'].values()
-        with open("experiments/" + str(subdir) + "/parameters.csv", 'w') as f:
+        with open("experiments/" + str(fulldir) + "/parameters.csv", 'w') as f:
             for key in keys:
                 f.write(key + ",")
             f.write("\n")
@@ -66,7 +82,7 @@ class Reporting():
             f.write("\n")
        
         # Write the details for each network in each generation
-        with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'w') as f:
+        with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'w') as f:
             header = ("generation","stage","#","serial_number","checksum","parent_1","parent_2","hidden_weights","output_weights","hidden_checksum","output_checksum","input","hidden_type","hidden_neurons","hidden_activation","output_type","output_count","output_activation","fitness")
             for ele in header:
                 f.write(ele + ",")
@@ -87,7 +103,7 @@ class Reporting():
         
         for gen in range(len(report['generations'])):
             # Write the output for each network in each generation
-            with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'a') as f:
+            with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'a') as f:
                 # After evaluation
                 for nn in range(len(report['generations'][gen]['after_evaluation'])):
                     f.write(f"{gen},after_evaluation,{nn},")
@@ -102,7 +118,7 @@ class Reporting():
                     f.write(f"{report['generations'][gen]['after_evaluation'][nn][1]}\n")
                 
                 # After carryover
-            with open("experiments/" + str(subdir) + "/nn_and_results_data.csv", 'a') as f:
+            with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'a') as f:
                 # After evaluation
                 for nn in range(len(report['generations'][gen]['after_carryover'])):
                     f.write(f"{gen},after_carryover,{nn},")
@@ -123,7 +139,7 @@ class Reporting():
         # maximum fitness
         # average fitness
         
-        with open("experiments/" + str(subdir) + "/generation_summary.csv", 'w') as f:
+        with open("experiments/" + str(fulldir) + "/generation_summary.csv", 'w') as f:
             header = ("generation","number_of_networks","maximum_fitness","average_fitness")
             for ele in header:
                 f.write(ele + ",")
@@ -143,6 +159,6 @@ class Reporting():
             max_fitness = max(fitnesses)
             avg_fitness = round(sum(fitnesses) / num_nn, 2)
             
-            with open("experiments/" + str(subdir) + "/generation_summary.csv", 'a') as f:
+            with open("experiments/" + str(fulldir) + "/generation_summary.csv", 'a') as f:
                 f.write(f"{gen},{num_nn},{max_fitness},{avg_fitness}")
                 f.write("\n")

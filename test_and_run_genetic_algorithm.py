@@ -70,6 +70,9 @@ class TestGeneticAlgorithm(unittest.TestCase):
         steps_to_retain = parameters['steps_to_retain']
         
         # Calculated variables derived from the parameters
+        # The size of the inputs will be steps * 7
+        #  (one for each action, + the choice + the result) + the current
+        #  action space length of 5, as described in simulation.py.
         inputs_size = (steps_to_retain * 7) + 5
         
                                

@@ -46,8 +46,8 @@ if __name__ == "__main__":
     # Ranges
     parameter_ranges = {
         'generations': [5, 10],
-        'size_new_generations': [100],
-        'max_population_size': [105],
+        'size_new_generations': [10],
+        'max_population_size': [15],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
@@ -99,6 +99,7 @@ if __name__ == "__main__":
                                                                     
                                                                     # Get the timestamp to name the subfolder
                                                                     parameters['subfolder'] = str(datetime.datetime.now().timestamp())
+                                                                    # And run the experiment
                                                                     main(parameters)
                                                         
     # Per experiment to change the parameters

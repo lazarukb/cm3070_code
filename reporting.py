@@ -48,7 +48,7 @@ class Reporting():
             os.mkdir("experiments/" + str(maindir))
         except:
             print(f"\n\n -----------------------------------------------------\n")
-            print(f"Note, the main directory {maindir} already exists." +
+            print(f"Note, the main directory {maindir} already exists. " +
                 "Subfolders are being mixed with new and previous data.")
             print(f"\n -----------------------------------------------------\n")
 

@@ -41,11 +41,6 @@ class Breeding(unittest.TestCase):
         then return that child.
 
         Args:
-            table_handle: An open smalltable.Table instance.
-            keys: A sequence of strings representing the key of each table
-            row to fetch.  String keys will be UTF-8 encoded.
-            require_all_keys: If True only rows with values set for all keys will be
-            returned.
             sim_population: the Population instance being evaluated.
             serial_number: current largest unique int in the population.
             point_mutation_scalar: int scaling mutation of unfit networks.

@@ -48,7 +48,8 @@ class Population():
     '''Select a parent neural network from the fitness map
     returns integer, the number of the network in the population'''
     def get_weighted_parent(self):
-        # Create the seed and weight it against the last value in the fitness map which will be the sum of all fitnesses
+        # Create the seed and weight it against the last value in the
+        #  fitness map which will be the sum of all fitnesses
         random_seed = random.random() * self.fitness_map[-1]
         for network in range(len(self.fitness_map)):
             if random_seed <= self.fitness_map[network]:

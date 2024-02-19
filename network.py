@@ -8,11 +8,32 @@ class Network:
         self.genome = genome.Genome.get_gene_specifications()
         self.fitness = None
         self.weights = []
-        self.dna = {"meta": {"serial_number": 0, "checksum": 0, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}, "inputs": None, "hidden_layers": [], "output": None}
+        self.dna = {
+            "meta":{
+                "serial_number": 0,
+                "checksum": 0,
+                "parent_1": None,
+                "parent_2": None,
+                "hidden_weights": None,
+                "output_weights": None
+                },
+            "inputs": None,
+            "hidden_layers": [],
+            "output": None
+            }
     
     '''Create a random network from the genome'''
-    def create_random_network_dna(self, serial_number, inputs_size, hidden_layers_count = 1):
-        self.dna = genome.Genome.create_random_genome(self.genome, hidden_layers_count)
+    def create_random_network_dna(
+        self,
+        serial_number,
+        inputs_size,
+        hidden_layers_count = 1
+        ):
+        
+        self.dna = genome.Genome.create_random_genome(
+            self.genome,
+            hidden_layers_count
+            )
         self.dna["meta"]["serial_number"] = serial_number
         self.dna["inputs"] = inputs_size
         self.weights = []
@@ -22,7 +43,16 @@ class Network:
         return self.dna
     
     '''Set the components of this network via DICT inputs'''
-    def create_specified_network_dna(self, serial_number, input_settings, hidden_weights, output_weights, parent_1, parent_2):
+    def create_specified_network_dna(
+        self,
+        serial_number,
+        input_settings,
+        hidden_weights,
+        output_weights,
+        parent_1,
+        parent_2
+        ):
+        
         self.dna["inputs"] = input_settings["inputs"]
         self.dna["hidden_layers"] = input_settings["hidden_layers"]
         self.dna["output"] = input_settings["output"]
@@ -68,19 +98,29 @@ class Network:
 
         # Link the first hidden layer to the input layer
         # determine the keyword for the first hidden layer activation type
-        activation_type = self.get_activation_function_keyword(hidden_layer_definitions[0]["activation"])
+        activation_type = self.get_activation_function_keyword(
+            hidden_layer_definitions[0]["activation"]
+            )
         
         # Create and link the new hidden layer to the input layer
         if hidden_layer_definitions[0]["type"] >= 0.0 and hidden_layer_definitions[0]["type"] <= 1.0:
-            new_layer = layers.Dense(hidden_layer_definitions[0]["neurons"], activation_type)(inputs)
+            new_layer = layers.Dense(
+                hidden_layer_definitions[0]["neurons"],
+                activation_type
+                )(inputs)
             hidden_layers.append(new_layer)
             
         # If they exist, link additional hidden layers in sequence
         if len(hidden_layer_definitions) > 1:
             for hidden_layer in range(1, len(hidden_layer_definitions)):
-                activation_type = self.get_activation_function_keyword(hidden_layer_definitions[hidden_layer]["activation"])
+                activation_type = self.get_activation_function_keyword(
+                    hidden_layer_definitions[hidden_layer]["activation"]
+                    )
                 if hidden_layer_definitions[hidden_layer]["type"] >= 0.0 and hidden_layer_definitions[hidden_layer]["type"] <= 1.0:
-                    new_layer = layers.Dense(hidden_layer_definitions[hidden_layer]["neurons"], activation_type)(hidden_layers[hidden_layer - 1])
+                    new_layer = layers.Dense(
+                        hidden_layer_definitions[hidden_layer]["neurons"],
+                        activation_type
+                        )(hidden_layers[hidden_layer - 1])
                     hidden_layers.append(new_layer)
                     
                     
@@ -89,24 +129,29 @@ class Network:
 
         # Create and link the output layer to the last hidden layer
         if self.dna["output"]["type"] >= 0.0 and self.dna["output"]["type"] <= 1.0:
-            outputs = layers.Dense(self.dna["output"]["count"], activation=activation_type)(hidden_layers[len(hidden_layers) - 1])
+            outputs = layers.Dense(
+                self.dna["output"]["count"], activation=activation_type
+                )(hidden_layers[len(hidden_layers) - 1])
 
         # Build the model
         nn_model = keras.Model(inputs=inputs, outputs=outputs)
         
         # Right now the weights have been randomly generated.
-        # If there are already weights in this instance then overwrite with those
-        # If there are no weights then this is a new instance - recover and save the randomised weights
+        # If there are already weights in this instance then overwrite.
+        # If there are no weights then this is a new instance - 
+        #  recover and save the randomised weights
         if len(self.weights) != 0:
             pass
         else:
-            # Gather the weights and biases of the layers, input, all hidden, and output layers are included in the method. The first is the input, which has no weights, so skip it.
+            # Gather the weights and biases of the layers, input, all hidden, 
+            #  and output layers are included in the method. The first is the 
+            #  input, which has no weights, so skip it.
             for layer in range(1, len(nn_model.layers) - 0):
                 weights_biases = (nn_model.layers[layer].get_weights())
                 layer_config = (nn_model.layers[layer].get_config())
                 self.save_weight_bias_definitions(layer, weights_biases)
                 
-        # Update the metadata for this instance with the checksum weights of the layers.      
+        # Update  metadata for this instance with  checksum weights of  layers.      
         self.dna["meta"]["hidden_checksum"] = self.checksum_weights(1)
         self.dna["meta"]["output_checksum"] = self.checksum_weights(2)
         self.dna["meta"]["checksum"] = self.checksum()

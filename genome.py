@@ -16,14 +16,24 @@ class Genome():
         genome = {}
         
         # Prepare for storing some metadata
-        genome["meta"] = {"serial_number": None, "checksum": None, "parent_1": None, "parent_2": None, "hidden_weights": None, "output_weights": None}
+        genome["meta"] = {
+            "serial_number": None,
+            "checksum": None,
+            "parent_1": None,
+            "parent_2": None,
+            "hidden_weights": None,
+            "output_weights": None
+            }
         
         # Define the hidden layers
         hidden_layer_definitions = []
         for layer in range(hidden_layers_count):
             activation = random.uniform(0, specification["hidden_activation"])
             type = random.uniform(0, specification["hidden_type"])
-            neurons = random.uniform(specification["hidden_neurons_min"], specification["hidden_neurons_max"])
+            neurons = random.uniform(
+                specification["hidden_neurons_min"],
+                specification["hidden_neurons_max"]
+                )
             layer = {"type": type, "neurons": neurons, "activation": activation}
             hidden_layer_definitions.append(layer)
         genome["hidden_layers"] = hidden_layer_definitions
@@ -32,7 +42,11 @@ class Genome():
         output_count = (specification["outputs"])
         activation_out = random.uniform(0, specification["output_activation"])
         type_out = random.uniform(0, specification["output_type"])
-        output_layer = {"type": type_out, "count": output_count, "activation": activation_out}
+        output_layer = {
+            "type": type_out,
+            "count": output_count,
+            "activation": activation_out
+            }
         genome["output"] = output_layer
         
         return genome

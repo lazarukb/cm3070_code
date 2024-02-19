@@ -13,12 +13,10 @@ class Reporting():
     def census(sim_population):
         # Gathers and returns the stats of a population
         results = []
-        # population_size = population.Population.get_population_size(sim_population)
         population_size = sim_population.get_population_size()
         
         # each network's meta data, and fitness
         for i in range(population_size):
-            # nn_meta = population.Population.get_neural_network_def(sim_population, i)
             nn_meta = sim_population.get_neural_network_def(i)
             nn_fitness = sim_population.get_nn_fitness(i)
             results.append([nn_meta, nn_fitness])
@@ -48,17 +46,17 @@ class Reporting():
             os.mkdir("experiments/" + str(maindir))
             os.mkdir("experiments/" + str(maindir) + "/!-- " + str(comment))
         except:
-            print(f"\n\n -----------------------------------------------------\n")
+            print(f"\n\n ------------------------------------------------\n")
             print(f"Note, the main directory {maindir} already exists. " +
                 "Subfolders are being mixed with new and previous data.")
-            print(f"\n -----------------------------------------------------\n")
+            print(f"\n --------------------------------------------------\n")
 
         # But subfolders must not be overwritten if they exist as this is where
         #  the data is stored.
         try:
             os.mkdir("experiments/" + str(maindir) + "/" + str(subdir))
         except:
-            print(f"\n\nFATAL. The experiment directory {fulldir} already exists.\n\n")
+            print(f"\n\nFATAL. The directory {fulldir} already exists.\n\n")
             quit(1)
         
     
@@ -69,7 +67,7 @@ class Reporting():
         
         if subdir == 0 or maindir == 0:
             return
-        # Assumes that the subdirectory exists as the create_folders function was called earlier.      
+        # Assumes the subdir exists as create_folders() was called earlier.      
         
         # Write the experiment parameters  
         keys = report['parameters'].keys()
@@ -84,7 +82,27 @@ class Reporting():
        
         # Write the details for each network in each generation
         with open("experiments/" + str(fulldir) + "/nn_and_results_data.csv", 'w') as f:
-            header = ("generation","stage","#","serial_number","checksum","parent_1","parent_2","hidden_weights","output_weights","hidden_checksum","output_checksum","input","hidden_type","hidden_neurons","hidden_activation","output_type","output_count","output_activation","fitness")
+            header = (
+                "generation",
+                "stage",
+                "#",
+                "serial_number",
+                "checksum",
+                "parent_1",
+                "parent_2",
+                "hidden_weights",
+                "output_weights",
+                "hidden_checksum",
+                "output_checksum",
+                "input",
+                "hidden_type",
+                "hidden_neurons",
+                "hidden_activation",
+                "output_type",
+                "output_count",
+                "output_activation",
+                "fitness"
+                )
             for ele in header:
                 f.write(ele + ",")
             f.write("\n")
@@ -151,7 +169,8 @@ class Reporting():
         sim_avg_fitness = 0
         for gen in range(len(report['generations'])):
             fitnesses = []
-            # Calculate and write the output for each network in each generation, after evaluation
+            # Calculate and write the output for each network in each
+            #  generation, after evaluation
             num_nn = len(report['generations'][gen]['after_evaluation'])
             
             # Gather metrics per nn

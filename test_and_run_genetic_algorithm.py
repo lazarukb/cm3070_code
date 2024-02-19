@@ -12,46 +12,18 @@ import breeding
 class TestGeneticAlgorithm(unittest.TestCase):
     
     # Initial processing flow of this code was derived, but also fully re-typed
-    # # and edited, from that presented in lectures in CM3020.
+    # and edited, from that presented in lectures in CM3020.
     def testGeneticAlgorithm(self, parameters):      
         # Initialisation
-        max_avg_fitness = ''
         serial_number = 0
         experiment_report = {}
         experiment_results = []
 
-        print(f"\n")
-        for p in parameters:
-            print(f"{p}: {parameters[p]}")            
-        print(f"\n")
+        # print(f"\n")
+        # for p in parameters:
+        #     print(f"{p}: {parameters[p]}")            
+        # print(f"\n")
        
-        # # Number of steps to be saved to the input tensor directly affects the 
-        # #  inputs to the nn. The size of the inputs will be steps * 7
-        # #  (one for each action, + the choice + the result) + the current
-        # #  action space length of 5, as described in simulation.py.
-        # steps_to_retain = 10
-        # inputs_size = (steps_to_retain * 7) + 5
-        
-        # parameters = {'experiment_number': 1,
-        #               'experiment_comment': "development - no experiment being saved",
-        #               'generations': 10,
-        #               'size_new_generations': 10,
-        #               'max_population_size': 11,
-        #               'point_mutation_chance': 0.3,
-        #               'point_mutation_amount': 0.35,
-        #               'point_mutation_chance_max': 0.75,
-        #               'point_mutation_amount_max': 0.5,
-        #               'point_mutation_scalar': 5,
-        #               'force_random_choice': False,
-        #               'force_pickup': False,
-        #               'game': 'coin_collector_5',
-        #               'steps_to_retain': steps_to_retain,
-        #               'inputs_size': inputs_size,
-        #               'fitness_bias_scalar': 0.25,
-        #               'failed_step_reward': 0,
-        #               'valid_step_reward': 5,
-        #               'chain_rewards': False}
-        
         # Defining some globals - may reset these throughout the code to passing the parameters dict instead, may not ... --------------------------------------
         generations = parameters['generations']
         size_new_generations = parameters['size_new_generations']
@@ -77,7 +49,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         inputs_size = (steps_to_retain * 7) + 5
         
                                
-        # Early test of the directory structure to ensure nothing is overwritten.
+        # Early test of directory structure to ensure nothing is overwritten.
         # If this fails then the directory already exists and we don't want to
         #  overwrite previous work, so fail out.
         reporting.Reporting.create_folders(parameters)
@@ -87,7 +59,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
         sim_population.create_random_population(size_new_generations, serial_number, inputs_size)
         serial_number += size_new_generations
         
-        # Validate that the simulation_population is of the proper class, and has the specified number of member neural networks
+        # Validate that the simulation_population is of the proper class, 
+        #  and has the specified number of member neural networks
         self.assertIsInstance(sim_population, population.Population)
         self.assertEqual(sim_population.get_population_size(), size_new_generations)
         
@@ -109,17 +82,19 @@ class TestGeneticAlgorithm(unittest.TestCase):
             # Validate that the simulation_population is of the proper class
             self.assertIsInstance(sim_population, population.Population)
             
-            # run the networks through the game, which modifies the components of the simulation_population object
+            # run the networks through the game, which modifies the 
+            #  components of the simulation_population object.
             sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup, steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards)
             
-            # Capture the state of the population with fitnesses after they've gone through the evaluation
+            # Capture the state of the population with fitnesses after 
+            #  they've gone through the evaluation.
             experiment_results['after_evaluation'] = reporting.Reporting.census(sim_population)
             
             # Create the fitness map for this population
             sim_population.create_fitness_map()
             
-            # Breed, cross-over, and mutate the population to produce a new population
-            # print(f"All networks have been run through the Textworld. Proceed with breeding.")
+            # Breed, cross-over, and mutate the population to produce a
+            #  new population.
             # Create the population instance target for the children
             new_population = population.Population()
             
@@ -136,7 +111,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 serial_number += 1
 
             
-            # Carryover - retaining the most fit networks from the previous generation
+            # Carryover - retaining most fit network(s) from prev generation.
             if size_new_generations != max_population_size:
                 # Get the number of networks to carry over from the old
                 #  generation to the new, capped at the number of networks
@@ -160,7 +135,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 #  a minimum fitness, in which case skip them, no point.
                 for i in range(carryover_count):
                     if sim_population.get_nn_fitness(most_fit_networks_desc[i]) > 1:
-                        # Build the definition of a network from the candidate network
+                        # Build definition of a network from candidate network
                         import_nn_definition = {}
                         import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
                         self.assertIsInstance(import_nn_definition, dict)
@@ -172,8 +147,15 @@ class TestGeneticAlgorithm(unittest.TestCase):
                         self.assertIsInstance(import_nn_weights_bias, list)
                         self.assertIsInstance(import_nn_output_weights_bias, list)
                         
-                        # Create the object from the definition and add to the new_population
-                        import_nn_obj = sim_population.create_nn(import_nn_serial, import_nn_definition, import_nn_weights_bias, import_nn_output_weights_bias, import_nn_parent_1, import_nn_parent_2)
+                        # Create object from definition and add to new_population
+                        import_nn_obj = sim_population.create_nn(
+                            import_nn_serial,
+                            import_nn_definition,
+                            import_nn_weights_bias,
+                            import_nn_output_weights_bias,
+                            import_nn_parent_1,
+                            import_nn_parent_2
+                            )
                         new_population.add_nn(import_nn_obj)
                            
             # Check any carried-over networks against the previous versions to
@@ -278,3 +260,31 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # child_network_weights[0, 511] = 1
                 # print(child_network_weights)
                 # print(child_network_weights[0, 511])
+                
+                
+                        # # Number of steps to be saved to the input tensor directly affects the 
+        # #  inputs to the nn. The size of the inputs will be steps * 7
+        # #  (one for each action, + the choice + the result) + the current
+        # #  action space length of 5, as described in simulation.py.
+        # steps_to_retain = 10
+        # inputs_size = (steps_to_retain * 7) + 5
+        
+        # parameters = {'experiment_number': 1,
+        #               'experiment_comment': "development - no experiment being saved",
+        #               'generations': 10,
+        #               'size_new_generations': 10,
+        #               'max_population_size': 11,
+        #               'point_mutation_chance': 0.3,
+        #               'point_mutation_amount': 0.35,
+        #               'point_mutation_chance_max': 0.75,
+        #               'point_mutation_amount_max': 0.5,
+        #               'point_mutation_scalar': 5,
+        #               'force_random_choice': False,
+        #               'force_pickup': False,
+        #               'game': 'coin_collector_5',
+        #               'steps_to_retain': steps_to_retain,
+        #               'inputs_size': inputs_size,
+        #               'fitness_bias_scalar': 0.25,
+        #               'failed_step_reward': 0,
+        #               'valid_step_reward': 5,
+        #               'chain_rewards': False}

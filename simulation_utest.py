@@ -9,8 +9,6 @@ import textworld
 import textworld.gym
 import TextworldGames
 
-# tw-make tw-coin_collector --level 5 --format ulx
-
 # from keras import layers
 
 class Simulation(unittest.TestCase):

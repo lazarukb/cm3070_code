@@ -1,5 +1,7 @@
 
 # for storing the information for the generated games
+# tw-make tw-coin_collector --level 5 --format ulx
+
 class TextworldGames():
    
     def __init__(self):

@@ -38,24 +38,44 @@ class Simulation(unittest.TestCase):
         max_steps = tw_game_index.getGameMaxSteps(code)
         file_path = tw_game_index.getGamePath(code)
         self.assertIsNotNone(file_path)
-        environment_id = textworld.gym.register_game(file_path, self.env_parameters, max_episode_steps = max_steps)
+        environment_id = textworld.gym.register_game(
+            file_path,
+            self.env_parameters,
+            max_episode_steps = max_steps
+            )
         self.assertIsInstance(environment_id, str)
         return environment_id, max_steps
     
       
-    def apply_nn_to_textworld(self, nn_obj, game, force_random_choice, force_pickup, steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards):
+    def apply_nn_to_textworld(
+        self,
+        nn_obj,
+        game,
+        force_random_choice,
+        force_pickup,
+        steps_to_retain,
+        failed_step_reward,
+        valid_step_reward,
+        chain_rewards
+        ):
+        
         environment_id, max_steps = self.registerEnvId(game)
         environment = textworld.gym.make(environment_id)
         obs, infos = environment.reset()
         self.assertIsInstance(obs, str)
         self.assertIsInstance(infos, dict)
 
-        # Per TextWorld docs, entities are everything in the game, anywhere in the maze.
-        #  The admissible commands are all the commands relevant to the current game state. So this will change from step to step.
-        #  Verbs - all understood by the game, is static from step to step.
-        #  To build the action space of available commands that could be entered into the interpreter
-        #  Get the verbs, and remove the ones that aren't necessary here like drop, examine, inventory, and look
-        #  Which leaves an action space of go * 4, one for each cardinal direction, and take coin, since that's the only object in the game.
+        # Per TextWorld docs, entities are everything in the game,
+        #  anywhere in the maze.
+        # Admissible commands are all the commands relevant to the current
+        #  game state. So this will change from step to step.
+        # Verbs - all as understood by the game, is static from step to step.
+        # To build the action space of available commands that could be
+        #  entered into the interpreter:
+        #   Get the verbs, and remove the ones that aren't necessary here
+        #   like drop, examine, inventory, and look.
+        #   Which leaves an action space of go * 4, one for each cardinal
+        #   direction, and take coin, since that's the only object in the game.
         action_space = ["take coin", "go east", "go west", "go north", "go south"]
 
         # Initialise the network's chosen action
@@ -68,18 +88,21 @@ class Simulation(unittest.TestCase):
             
       
         # Here the network is actually playing the game.
-        # This is where we feed the action space to the network and get a result, and assign that result to step
+        # This is where we feed the action space to the network and get
+        #  a result, and assign that result to step.
         for i in range(max_steps, 0, -1):
-            
-            # So get the possible states from the admissible commands statement
-            # Then convert the action space to 0 if the command is not admissible, and 1 if it is.
-
-                
-            # Build the action space for this room/step - the curated list of helpful
-            #  actions the network could take from the list of available actions in this room.
+            # Build the action space for this room/step - the curated list of
+            #  actions the network could legally make from the list of available actions in this room.
 
             # Poll the admissible actions - all the commands relevant to the current game state.
             # Parse through the curated action space, and mark as to if it's also in the currently admissible commands
+            
+            # For each step, build the input tensor from a one-hot list of
+            #  which of the global permitted commands are valid in this room.
+            # So if there is no coin in the room, despite "take coin" being
+            #  globally valid, the action space for this room would have a 0 for
+            #  "take coin". The one-hot list for the steps in this room are
+            #  stored in action_space_values[].            
             action_space_values = []
             for action in action_space:
                 if action in infos["admissible_commands"]:
@@ -87,13 +110,17 @@ class Simulation(unittest.TestCase):
                 else:
                     action_space_values.append(0)
                     
-            # Combine the current action space with the previous action spaces and results
+            # Combine the current action space with the previous action
+            #  spaces and results, to build the full input state.
             final_input = deepcopy(action_space_values)
             for prev in previous_action_spaces_and_choices:
                 for ele in prev:
                     final_input.append(ele)
 
             # self.assertEqual(len(final_input), (steps_to_retain * 7) + 5)
+            
+            assert len(final_input) == ((steps_to_retain * 7) + 5), \
+                "Input space is of the wrong length."
 
             # Convert the input space to a tensor, and feed that to the network
             #  to get the probabilities for each of the 5 actions.
@@ -109,28 +136,29 @@ class Simulation(unittest.TestCase):
             
             # Here is the editing out a choice which is proven to not work.
             # In early testing the networks were very likely to get stuck, 
-            #  continually walking into the same wall or picking up a coin that wasn't there.
+            #  repeatedly walking into the same wall or picking up a coin
+            #  that wasn't there.
             # To avoid this, check the current observation, which is the result
             #  of the last step in the game. If it suggests that there is no
             #  coin to pick up, which is the response when the network tries to
             #  pick up a coin that isn't there, or that the last step was
             #  invalid, remove those choices from the possible actions.
             # Basically, if the selected action is the same as the last action,
-            #  then check to see if that did anything. If it failed, choose the next
+            #  then check if that did anything. If it failed, choose the next
             #  most likely option instead.
             # Else, set the action to be what the network has decided.
             
-            # Use a random choice instead of the next most likely, if the flag is set
+            # Use random choice instead of next most likely, if the flag is set
             if descending[0] == nn_action and force_random_choice:
                 # The current step choice is the same as the previous.
                 # Check what happened the last time this step was taken
                 if previous_action_spaces_and_choices[0][6] == failed_step_reward:
-                    # A 0 here means the last step resulted in walking into a wall
+                    # Means last step resulted in walking into a wall
                     #  or trying to pick up a coin that wasn't there.
-                    # So, avoid doing that again by randomly choosing a different action.
+                    # Avoid doing that again by choosing a different action.
                     nn_action = descending[random.randint(1, len(descending) - 1)]
             else:
-                # The last step didn't fail outright, so accept the network's choice
+                # The last step didn't fail outright, accept network's choice
                 #  to try it again.
                 nn_action = descending[0]
                 
@@ -155,7 +183,7 @@ class Simulation(unittest.TestCase):
             # After this we know the current action space, the step decision, and the result of the step.
             # So populate that into the previous choices array for the next step.
             result_to_be_added = None
-            if (obs.strip() == "You can't go that way.") or (obs.strip() == "You can't see any such thing."):
+            if obs.strip() == "You can't go that way." or obs.strip() == "You can't see any such thing.":
                 result_to_be_added = failed_step_reward
             else:
                 # Here is a good step. The network didn't win the game, but also
@@ -192,18 +220,40 @@ class Simulation(unittest.TestCase):
         return i
         
 
-    def evaluate_population(self, sim_population, _game, _force_random_choice, _force_pickup, _steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards):
+    def evaluate_population(
+        self,
+        sim_population,
+        _game,
+        _force_random_choice,
+        _force_pickup,
+        _steps_to_retain,
+        failed_step_reward,
+        valid_step_reward,
+        chain_rewards
+        ):
+        
         # Get the number of networks in the population
-        # For each network, retrieve its Keras model, and push it through the gym
-        # When this is called, the population of Network objects already exists as sim_population, which is a Population instance
-        # Get the number of networks in the population
+        # For each network, retrieve its Keras model, and push it through Gym
+        # When this is called, the population of Network objects already exists
+        #  as sim_population, which is a Population instance.
+        # Get the number of networks in the population.
         networks_count = sim_population.get_population_size()
         for i in range(networks_count):
             # Get the Keras model from the Network object
             nn_obj = sim_population.get_neural_network_model(i)
             
-            # Send each network off to play the game now, and eventually this should return the fitness value
-            fitness = self.apply_nn_to_textworld(nn_obj, _game, _force_random_choice, _force_pickup, _steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards)
+            # Send each network off to play the game now, and 
+            #  eventually this should return the fitness value.
+            fitness = self.apply_nn_to_textworld(
+                nn_obj,
+                _game,
+                _force_random_choice,
+                _force_pickup,
+                _steps_to_retain,
+                failed_step_reward,
+                valid_step_reward,
+                chain_rewards
+                )
             sim_population.set_nn_fitness(i, fitness)
             
 

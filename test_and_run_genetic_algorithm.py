@@ -56,7 +56,11 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Create the initial population of randomised neural network definitions
         sim_population = population.Population()
-        sim_population.create_random_population(size_new_generations, serial_number, inputs_size)
+        sim_population.create_random_population(
+            size_new_generations,
+            serial_number,
+            inputs_size
+            )
         serial_number += size_new_generations
         
         # Validate that the simulation_population is of the proper class, 
@@ -84,7 +88,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # run the networks through the game, which modifies the 
             #  components of the simulation_population object.
-            sim_environment.evaluate_population(sim_population, game, force_random_choice, force_pickup, steps_to_retain, failed_step_reward, valid_step_reward, chain_rewards)
+            sim_environment.evaluate_population(
+                sim_population,
+                game,
+                force_random_choice,
+                force_pickup,
+                steps_to_retain,
+                failed_step_reward,
+                valid_step_reward,
+                chain_rewards
+                )
             
             # Capture the state of the population with fitnesses after 
             #  they've gone through the evaluation.
@@ -105,7 +118,16 @@ class TestGeneticAlgorithm(unittest.TestCase):
             # For each new child neural network that is required, run the breeder.
             for new_child_nn in range(size_new_generations):
                 # Create the new child neural network object
-                new_child_nn_obj = breeder.cross_and_mutate(sim_population, serial_number, point_mutation_scalar, point_mutation_chance, point_mutation_amount, point_mutation_chance_max, point_mutation_amount_max, fitness_bias_scalar)
+                new_child_nn_obj = breeder.cross_and_mutate(
+                    sim_population,
+                    serial_number,
+                    point_mutation_scalar,
+                    point_mutation_chance,
+                    point_mutation_amount,
+                    point_mutation_chance_max,
+                    point_mutation_amount_max,
+                    fitness_bias_scalar
+                    )
                 # And add it to the new population
                 new_population.add_nn(new_child_nn_obj)
                 serial_number += 1

@@ -1,14 +1,13 @@
 import test_and_run_genetic_algorithm
 import datetime
 import os
+import reporting
         
 def main(parameters):
     print("Hello World!")
     simulation = test_and_run_genetic_algorithm.TestGeneticAlgorithm()
     # run
     avg_fit = simulation.testGeneticAlgorithm(parameters)
-    # peak_fit = None
-    # avg_fit = None
     
     return avg_fit
     
@@ -71,6 +70,8 @@ if __name__ == "__main__":
     }
     
     # Modification loops
+    # Ignoring the 80 character line limit here to ensure this remains
+    #  readable and understandable in case of troubleshooting.
     for chain in range(len(parameter_ranges['chain_rewards'])):
         parameters['chain_rewards'] = parameter_ranges['chain_rewards'][chain]
         for f_pickup in range(len(parameter_ranges['force_pickup'])):
@@ -109,17 +110,15 @@ if __name__ == "__main__":
                                                                     # And run the experiment
                                                                     avg_fit = main(parameters)
                                                                     
-                                                                    # Check max
+                                                                    # Store max fitness
                                                                     max_fitness.append([parameters['subfolder'], avg_fit])
-                                                                    # print(max_fitness)
-                                                                    
 
     
     # Report the folders by highest average fitnesses
     most_fit_folders = sorted(max_fitness, key=lambda x: x[1], reverse=True)
-    print(most_fit_folders)
     
     # Now output this list to disk in the root of the experiment folder
+    # MOVE THIS TO REPORTING - THATS WHERE REPORTING GOES
     with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment.csv", 'w') as f:
         header = ("subfolder","fitness",)
         for ele in header:

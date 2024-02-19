@@ -1,8 +1,32 @@
+"""A one-line summary of the module or program, terminated by a period.
+
+Leave one blank line.  The rest of this docstring should contain an
+overall description of the module or program.  Optionally, it may also
+contain a brief description of exported classes and functions and/or usage
+examples.
+
+Typical usage example:
+
+  foo = ClassFoo()
+  bar = foo.FunctionBar()
+"""
+
 # import unittest
 import network
 import random
 
 class Population():
+    """Summary of class here.
+
+    Longer class information...
+    Longer class information...
+
+    Attributes:
+    remove this: only need to be here if there is an __init__
+        likes_spam: A boolean indicating if we like SPAM or not.
+        eggs: An integer count of the eggs we have laid.
+    """
+    
     def __init__(self):
         self.fitness_map = []
         self.networks = []

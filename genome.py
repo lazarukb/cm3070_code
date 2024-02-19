@@ -4,12 +4,35 @@ Fixed components of the genome:
 Inputs: this is the number of 
 '''
 
+"""A one-line summary of the module or program, terminated by a period.
+
+Leave one blank line.  The rest of this docstring should contain an
+overall description of the module or program.  Optionally, it may also
+contain a brief description of exported classes and functions and/or usage
+examples.
+
+Typical usage example:
+
+  foo = ClassFoo()
+  bar = foo.FunctionBar()
+"""
+
 # import numpy as np
 import random
 
 # this code heavily derived from code presented in lectures in CM3020
 class Genome():
-   
+    """Summary of class here.
+
+    Longer class information...
+    Longer class information...
+
+    Attributes:
+    remove this: only need to be here if there is an __init__
+        likes_spam: A boolean indicating if we like SPAM or not.
+        eggs: An integer count of the eggs we have laid.
+    """
+    
     # This one is properly static as this is effectively a data class, never itself instantiated.
     @staticmethod
     def create_random_genome(specification, hidden_layers_count):

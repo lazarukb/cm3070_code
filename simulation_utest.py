@@ -148,8 +148,8 @@ class Simulation(unittest.TestCase):
 
             # Evaluate the step.
             # Check the info output to see if the network solved the game.
-            #  If so, break out now.
-            if infos['won'] == True:
+            #  If so, break out now. It's a Boolean, returning True|False.
+            if infos['won']:
                 break
             
             # Determine if the step resulted in running into a wall or trying to

@@ -19,9 +19,9 @@ if __name__ == "__main__":
     
     # Defaults
     parameters = {
-        'experiment_number': '1030',
+        'experiment_number': '1',
         'subfolder': '',
-        'experiment_comment': "Testing steps to retain and chain rewards",
+        'experiment_comment': "Testing while editing for formatting",
         'generations': 10,
         'size_new_generations': 10,
         'max_population_size': 11,
@@ -52,22 +52,22 @@ if __name__ == "__main__":
     # This is exponential so do be careful with how many choices there are
     # Ranges
     parameter_ranges = {
-        'generations': [3],
+        'generations': [5],
         'size_new_generations': [10],
-        'max_population_size': [15],
+        'max_population_size': [10],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
         'point_mutation_amount_max': [0.5],
         'point_mutation_scalar': [5],
         'game': ['coin_collector_5'],
-        'steps_to_retain': [3, 50],
+        'steps_to_retain': [3],
         'fitness_bias_scalar': [0.25],
         'failed_step_reward': [-1],
         'valid_step_reward': [5],
         'force_random_choice': [False],
         'force_pickup': [False],
-        'chain_rewards': [False, True]
+        'chain_rewards': [False]
     }
     
     # Modification loops
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     print(most_fit_folders)
     
     # Now output this list to disk in the root of the experiment folder
-    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary.csv", 'w') as f:
+    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment.csv", 'w') as f:
         header = ("subfolder","fitness",)
         for ele in header:
             f.write(ele + ",")

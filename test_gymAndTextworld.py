@@ -97,7 +97,7 @@ class testTextWorld(unittest.TestCase):
             obs, score, done, infos = environment.step(action_space[step])
             print(obs)
             print(f"status {done}, {infos['moves']}, {infos['won']}")
-            if done == True:
+            if done:
                 break
         
         print("-=-=-==-=-=-=-=-=-=-=-=-=-==-==-")

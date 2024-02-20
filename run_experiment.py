@@ -17,9 +17,23 @@ import os
 import reporting
         
 def main(parameters):
-    print("Hello World!")
+    """One line describe the method/function. No blank line between the opening triple quotes and the def or class declaration above
+
+    As necessary, expand here.
+    remove this: A docstring should give enough information to write a call to the function without reading the function’s code. The docstring should describe the function’s calling syntax and its semantics, but generally not its implementation details, unless those details are relevant to how the function is to be used.
+
+    Args:
+        argument: type and function
+        argument: type and function
+
+    Returns:
+        A Network instance as defined by the dict during processing.
+        Leave a single blank line between the closing quotes and the commands.
+    """
+    
+    # Initialise and run, getting the simulation's average fitness for later.
+    
     simulation = test_and_run_genetic_algorithm.TestGeneticAlgorithm()
-    # run
     avg_fit = simulation.testGeneticAlgorithm(parameters)
     
     return avg_fit

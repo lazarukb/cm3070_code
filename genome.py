@@ -1,44 +1,33 @@
-'''
-Code for creating and modifying the genome that is used to define a neural network
-Fixed components of the genome:
-Inputs: this is the number of 
-'''
+"""Defines the foundational structure of the neural network.
 
-"""A one-line summary of the module or program, terminated by a period.
-
-Leave one blank line.  The rest of this docstring should contain an
-overall description of the module or program.  Optionally, it may also
-contain a brief description of exported classes and functions and/or usage
-examples.
-
-Typical usage example:
-
-  foo = ClassFoo()
-  bar = foo.FunctionBar()
+This is a mixed data and setter to store the foundational definition of a neural
+ network along with the maximum values that those components can have. Also a 
+ method here to populate a nn definition from those limits.
 """
 
-# import numpy as np
 import random
 
 # this code heavily derived from code presented in lectures in CM3020
 class Genome():
-    """Summary of class here.
+    """Stores the foundation for defining a network, and randomly initialises.
 
-    Longer class information...
-    Longer class information...
-
-    Attributes:
-    remove this: only need to be here if there is an __init__
-        likes_spam: A boolean indicating if we like SPAM or not.
-        eggs: An integer count of the eggs we have laid.
+    Will return a DNA for an instance derived from the bounds of the genome.
     """
     
-    # This one is properly static as this is effectively a data class, never itself instantiated.
     @staticmethod
     def create_random_genome(specification, hidden_layers_count):
-        genome = {}
+        """Creates a random DNA from the limitations of the genome.
+
+        Args:
+            specification: DICT of the DNA, defining the bounds of each key.
+            hidden_layers_count: INT count of hidden layers to be added.
+
+        Returns:
+            A DICT with DNA values for a network instance.
+        """
         
         # Prepare for storing some metadata
+        genome = {}
         genome["meta"] = {
             "serial_number": None,
             "checksum": None,
@@ -75,10 +64,19 @@ class Genome():
         return genome
     
 
-    '''Defines the components of the input, hidden, and output layers, along with their maximum values'''
-    # This method heavily inspired from CM3020 lectures
     @staticmethod
     def get_gene_specifications():
+        """Data, defining the components of a nn instance and their maximum values.
+        
+        This method structure heavily inspired from CM3020 lectures.
+        
+        Args:
+            None
+
+        Returns:
+            DICT of the nn components and their maximum values.
+        """
+        
         gene_specification = {
             "hidden_type": 1,
             "hidden_neurons_min": 512,
@@ -88,5 +86,6 @@ class Genome():
             "output_type": 1,
             "output_activation": 1
         }
+        
         return gene_specification
     

@@ -1,53 +1,57 @@
-"""A one-line summary of the module or program, terminated by a period.
+"""Main control for the execution of the genetic algorithm.
 
-Leave one blank line.  The rest of this docstring should contain an
-overall description of the module or program.  Optionally, it may also
-contain a brief description of exported classes and functions and/or usage
-examples.
-
-Typical usage example:
-
-  foo = ClassFoo()
-  bar = foo.FunctionBar()
+Commands the initialisation of the Simulation and Population objects as needed.
+Commands the Population to seed itself with initial random networks.
+Commands the simulation to evaluate and perform crossover on the Population.
+Causes reporting metrics to be created and stored.
 """
 
 import unittest
-# import genome
 import population
 import simulation_utest
 from copy import deepcopy
-# import random
 import numpy as np
 import reporting
-# from operator import itemgetter
 import breeding
 
 class TestGeneticAlgorithm(unittest.TestCase):
-    """Summary of class here.
+    """Main control for the execution of the genetic algorithm.
 
-    Longer class information...
-    Longer class information...
+    Commands the initialisation of the Simulation and Population objects as needed.
+    Commands the Population to seed itself with initial random networks.
+    Commands the simulation to evaluate and perform crossover on the Population.
+    Causes reporting metrics to be created and stored.
 
     Attributes:
-    remove this: only need to be here if there is an __init__
-        likes_spam: A boolean indicating if we like SPAM or not.
-        eggs: An integer count of the eggs we have laid.
+    remove this: only need to be here if there is an __init__ ----------------------------------------------------------------------=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=----------------
     """
     
     # Initial processing flow of this code was derived, but also fully re-typed
     # and edited, from that presented in lectures in CM3020.
-    def testGeneticAlgorithm(self, parameters):      
+    def testGeneticAlgorithm(self, parameters):
+        """Main control for the execution of the genetic algorithm.
+
+        Commands the initialisation of the Simulation and Population objects as needed.
+        Commands the Population to seed itself with initial random networks.
+        Commands the simulation to evaluate and perform crossover on the Population.
+        Causes reporting metrics to be created and stored.
+    
+        Args:
+            parameters: DICT of experimental parameters. Most are used here.
+             See run_experiment.py for a full description. 
+
+        Returns:
+            Float of the average fitness of the generations of this simulation.
+        """
+        
         # Initialisation
+        
         serial_number = 0
         experiment_report = {}
         experiment_results = []
-
-        # print(f"\n")
-        # for p in parameters:
-        #     print(f"{p}: {parameters[p]}")            
-        # print(f"\n")
        
-        # Defining some globals - may reset these throughout the code to passing the parameters dict instead, may not ... --------------------------------------
+        # Extract to shorter variable names from the parameters argument.
+        
         generations = parameters['generations']
         size_new_generations = parameters['size_new_generations']
         max_population_size = parameters['max_population_size']
@@ -69,15 +73,18 @@ class TestGeneticAlgorithm(unittest.TestCase):
         # The size of the inputs will be steps * 7
         #  (one for each action, + the choice + the result) + the current
         #  action space length of 5, as described in simulation.py.
+        
         inputs_size = (steps_to_retain * 7) + 5
         
-                               
         # Early test of directory structure to ensure nothing is overwritten.
         # If this fails then the directory already exists and we don't want to
-        #  overwrite previous work, so fail out.
+        #  overwrite previous work, so fail out early before doing a lot of 
+        #  calculations and using processing time.
+        
         reporting.Reporting.create_folders(parameters)
         
-        # Create the initial population of randomised neural network definitions
+        # Create the initial population of randomised neural networks.
+        
         sim_population = population.Population()
         sim_population.create_random_population(
             size_new_generations,
@@ -88,29 +95,31 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Validate that the simulation_population is of the proper class, 
         #  and has the specified number of member neural networks
+        
         self.assertIsInstance(sim_population, population.Population)
         self.assertEqual(sim_population.get_population_size(), size_new_generations)
         
         # Prepare reporting
+        
         experiment_report['parameters'] = parameters
         experiment_report['initial_population'] = reporting.Reporting.census(sim_population)
         experiment_report['generations'] = []
         
         # Create the simulation environment
+        
         sim_environment = simulation_utest.Simulation()
         
         # Run the networks through the gym and gather their fitness scores
+        
         for iteration in range(generations):
-            print(f"Beginning of generation {iteration}, ", end = "")
-            
-            # Prepare for reporting
+            print(f"Beginning of generation {iteration}. \t", end = "")
             experiment_results = {'after_evaluation': [], 'after_carryover': []}
-                       
-            # Validate that the simulation_population is of the proper class
             self.assertIsInstance(sim_population, population.Population)
             
-            # run the networks through the game, which modifies the 
-            #  components of the simulation_population object.
+            # Run the networks through the game, which modifies the 
+            #  components of the sim_population object and the network objects
+            #  stored in it.
+            
             sim_environment.evaluate_population(
                 sim_population,
                 game,
@@ -124,23 +133,20 @@ class TestGeneticAlgorithm(unittest.TestCase):
             
             # Capture the state of the population with fitnesses after 
             #  they've gone through the evaluation.
+            
             experiment_results['after_evaluation'] = reporting.Reporting.census(sim_population)
             
-            # Create the fitness map for this population
+            # Create the fitness map, breed, cross-over, and mutate the 
+            #  population to produce a new population.
             sim_population.create_fitness_map()
-            
-            # Breed, cross-over, and mutate the population to produce a
-            #  new population.
-            # Create the population instance target for the children
             new_population = population.Population()
-            
-            # Create an instance to handle the breeding and evolution work
             # This should probably be static. Look into it and fix. -------------------------------------------------------------------------------------------------------
             breeder = breeding.Breeding()
             
-            # For each new child neural network that is required, run the breeder.
+            # For each new child neural network that is required, run the
+            #  breeder and add the child nn to the new population.
+            
             for new_child_nn in range(size_new_generations):
-                # Create the new child neural network object
                 new_child_nn_obj = breeder.cross_and_mutate(
                     sim_population,
                     serial_number,
@@ -151,7 +157,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
                     point_mutation_amount_max,
                     fitness_bias_scalar
                     )
-                # And add it to the new population
                 new_population.add_nn(new_child_nn_obj)
                 serial_number += 1
 
@@ -178,9 +183,11 @@ class TestGeneticAlgorithm(unittest.TestCase):
                 # Then iterate through the sorted list to copy the specified
                 #  count of fit networks to the new generation, unless they have
                 #  a minimum fitness, in which case skip them, no point.
+                
                 for i in range(carryover_count):
                     if sim_population.get_nn_fitness(most_fit_networks_desc[i]) > 1:
                         # Build definition of a network from candidate network
+                        
                         import_nn_definition = {}
                         import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
                         self.assertIsInstance(import_nn_definition, dict)
@@ -204,7 +211,8 @@ class TestGeneticAlgorithm(unittest.TestCase):
                         new_population.add_nn(import_nn_obj)
                            
             # Check any carried-over networks against the previous versions to
-            #  ensure they are exactly the same from generation to generation.
+            #  ensure they are EXACTLY the same from generation to generation.
+            
             for i in range(new_population.get_population_size()):
                 for new_nn in range(new_population.get_population_size()):
                     new_nn_sn = new_population.get_neural_network_def(new_nn)['meta']['serial_number']
@@ -216,12 +224,14 @@ class TestGeneticAlgorithm(unittest.TestCase):
                             self.assertEqual(new_nn_checksum, old_nn_checksum)   
             
             # Replace the old population with the new one
+            
             sim_population = deepcopy(new_population)
             new_population = None
             self.assertIsNone(new_population)
             
             # Report the state of the population after they've gone
             #  through the breeding and carryover.
+            
             experiment_results['after_carryover'] = reporting.Reporting.census(sim_population)
             experiment_report['generations'].append(experiment_results)
             
@@ -229,6 +239,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # The simulation is complete here
         # Export the reporting
+        
         sim_avg_fitness = reporting.Reporting.output_to_csv(parameters, experiment_report)
         
         return sim_avg_fitness

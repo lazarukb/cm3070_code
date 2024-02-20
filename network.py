@@ -1,4 +1,9 @@
 """Defines and controls a neural network instance, using Keras.
+
+This module is for defining, creating, and updating Keras neural networks.
+Getter and setter methods interface between the instance data and the rest
+ of the simulation, most frequently from a Population instance working with the
+ networks assigned to it.
 """
 
 import genome

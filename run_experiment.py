@@ -1,14 +1,8 @@
-"""A one-line summary of the module or program, terminated by a period.
+"""Configures parameters, runs the simulations.
 
-Leave one blank line.  The rest of this docstring should contain an
-overall description of the module or program.  Optionally, it may also
-contain a brief description of exported classes and functions and/or usage
-examples.
-
-Typical usage example:
-
-  foo = ClassFoo()
-  bar = foo.FunctionBar()
+Initial point for configuring the experimental parameters and triggering the
+ simulation. Loops through optional lists of parameter values which can run
+ a single experiment, or an exponential number of them.
 """
 
 import test_and_run_genetic_algorithm
@@ -17,18 +11,15 @@ import os
 import reporting
         
 def main(parameters):
-    """One line describe the method/function. No blank line between the opening triple quotes and the def or class declaration above
-
-    As necessary, expand here.
-    remove this: A docstring should give enough information to write a call to the function without reading the function’s code. The docstring should describe the function’s calling syntax and its semantics, but generally not its implementation details, unless those details are relevant to how the function is to be used.
-
+    """Runs the simulation with the parameters argument payload.
+    
     Args:
-        argument: type and function
-        argument: type and function
+        parameters: dict of the the experimental parameters for this simulation.
+         Defined in the initialisation function below.
 
     Returns:
-        A Network instance as defined by the dict during processing.
-        Leave a single blank line between the closing quotes and the commands.
+        avg_fit: float of the average fitness scored across all the generations
+         run in this simulation.
     """
     
     # Initialise and run, getting the simulation's average fitness for later.

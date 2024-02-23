@@ -32,11 +32,14 @@ def main(parameters):
 
 if __name__ == "__main__":
     
+    start = datetime.datetime.now()
+    cumulative = {'generations': 0, 'networks' : 0}
+    
     max_fitness = []
     
     # Defaults
     parameters = {
-        'experiment_number': '1',
+        'experiment_number': '1100',
         'subfolder': '',
         'experiment_comment': "Testing while editing for formatting",
         'generations': 10,
@@ -71,7 +74,7 @@ if __name__ == "__main__":
     parameter_ranges = {
         'generations': [5],
         'size_new_generations': [10],
-        'max_population_size': [10],
+        'max_population_size': [15],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
@@ -128,8 +131,11 @@ if __name__ == "__main__":
                                                                     # And run the experiment
                                                                     avg_fit = main(parameters)
                                                                     
-                                                                    # Store max fitness
+                                                                    # Store max fitness and other stats
                                                                     max_fitness.append([parameters['subfolder'], avg_fit])
+                                                                    cumulative['generations'] += parameters['generations']
+                                                                    cumulative['networks'] += parameters['size_new_generations']
+                                                                    
 
     
     # Report the folders by highest average fitnesses
@@ -137,7 +143,7 @@ if __name__ == "__main__":
     
     # Now output this list to disk in the root of the experiment folder
     # MOVE THIS TO REPORTING - THATS WHERE REPORTING GOES
-    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment.csv", 'w') as f:
+    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment_" + str(datetime.datetime.now().microsecond) + ".csv", 'w') as f:
         header = ("subfolder","fitness",)
         for ele in header:
             f.write(ele + ",")
@@ -146,6 +152,12 @@ if __name__ == "__main__":
         for line in most_fit_folders:
             f.write(f"{str(line[0])},{str(line[1])},\n")
         f.write("\n")
+        
+        
+    end = datetime.datetime.now()
+    elapsed = end - start
+    
+    print(f"Total duration of the sim: {elapsed}, which is {elapsed / cumulative['generations']} per generation, or {elapsed / cumulative['networks']} per network.")
                                  
     # Per experiment to change the parameters
     # Number of steps to be retained to the input tensor directly affects the 

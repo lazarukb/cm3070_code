@@ -6,6 +6,7 @@ Commands the simulation to evaluate and perform crossover on the Population.
 Causes reporting metrics to be created and stored.
 """
 
+import unittest
 import population
 import simulation
 from copy import deepcopy
@@ -13,7 +14,7 @@ import numpy as np
 import reporting
 import breeding
 
-class TestGeneticAlgorithm():
+class TestGeneticAlgorithm(unittest.TestCase):
     """Main control for the execution of the genetic algorithm.
 
     Commands the initialisation of the Simulation and Population objects as needed.
@@ -92,6 +93,9 @@ class TestGeneticAlgorithm():
         # Validate that the simulation_population is of the proper class, 
         #  and has the specified number of member neural networks
         
+        self.assertIsInstance(sim_population, population.Population)
+        self.assertEqual(sim_population.get_population_size(), size_new_generations)
+        
         # Prepare reporting
         
         experiment_report['parameters'] = parameters
@@ -107,6 +111,7 @@ class TestGeneticAlgorithm():
         for iteration in range(generations):
             print(f"Beginning of generation {iteration}. \t", end = "")
             experiment_results = {'after_evaluation': [], 'after_carryover': []}
+            self.assertIsInstance(sim_population, population.Population)
             
             # Run the networks through the game, which modifies the 
             #  components of the sim_population object and the network objects
@@ -171,6 +176,7 @@ class TestGeneticAlgorithm():
                 all_fitnesses_prev_gen = []
                 for i in range(size_prev_gen):
                     all_fitnesses_prev_gen.append(sim_population.get_nn_fitness(i))
+                self.assertEqual(len(all_fitnesses_prev_gen), size_prev_gen)
                 all_fitnesses_prev_gen = np.asarray(all_fitnesses_prev_gen)
                 most_fit_networks = np.argsort(all_fitnesses_prev_gen)
                 most_fit_networks_desc = most_fit_networks[::-1].tolist()
@@ -185,11 +191,14 @@ class TestGeneticAlgorithm():
                         
                         import_nn_definition = {}
                         import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
+                        self.assertIsInstance(import_nn_definition, dict)
                         import_nn_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 1)
                         import_nn_output_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 2)
                         import_nn_serial = import_nn_definition['meta']['serial_number']
                         import_nn_parent_1 = import_nn_definition['meta']['parent_1']
                         import_nn_parent_2 = import_nn_definition['meta']['parent_2']
+                        self.assertIsInstance(import_nn_weights_bias, list)
+                        self.assertIsInstance(import_nn_output_weights_bias, list)
                         
                         # Create object from definition and add to new_population
                         import_nn_obj = sim_population.create_nn(
@@ -213,11 +222,13 @@ class TestGeneticAlgorithm():
                         if old_nn_sn == new_nn_sn:
                             new_nn_checksum = new_population.get_neural_network_def(new_nn)['meta']['checksum']
                             old_nn_checksum = sim_population.get_neural_network_def(old_nn)['meta']['checksum']
+                            self.assertEqual(new_nn_checksum, old_nn_checksum)   
             
             # Replace the old population with the new one
             
             sim_population = deepcopy(new_population)
             new_population = None
+            self.assertIsNone(new_population)
             
             # Report the state of the population after they've gone
             #  through the breeding and carryover.

@@ -9,6 +9,7 @@ The Simulation interfaces with TextWorld, to determine which are the valid steps
 import keras
 import numpy as np
 import random
+import unittest
 from copy import deepcopy
 
 import textworld
@@ -17,7 +18,7 @@ import TextworldGames
 
 # from keras import layers
 
-class Simulation():
+class Simulation(unittest.TestCase):
     """Runs the process of sending the networks of a Population through TextWorld.
 
     The Simulation interfaces with TextWorld, to determine which are the valid steps,
@@ -60,8 +61,10 @@ class Simulation():
         # Initialise the TextWorld games library, and read from it.
         
         tw_game_index = TextworldGames.TextworldGames()
+        self.assertIsNotNone(code)
         max_steps = tw_game_index.get_game_max_steps(code)
         file_path = tw_game_index.get_game_path(code)
+        self.assertIsNotNone(file_path)
         
         # Pass the arguments to Gym to build the TextWorld/Gym ID for this game.
         
@@ -70,6 +73,7 @@ class Simulation():
             self.env_parameters,
             max_episode_steps = max_steps
             )
+        self.assertIsInstance(environment_id, str)
         
         return environment_id, max_steps
     
@@ -109,6 +113,8 @@ class Simulation():
         environment_id, max_steps = self.register_env_id(game)
         environment = textworld.gym.make(environment_id)
         obs, infos = environment.reset()
+        self.assertIsInstance(obs, str)
+        self.assertIsInstance(infos, dict)
 
         # Per TextWorld docs, entities are everything in the game,
         #  anywhere in the maze.
@@ -171,6 +177,11 @@ class Simulation():
             for prev in previous_action_spaces_and_choices:
                 for ele in prev:
                     final_input.append(ele)
+
+            # Make sure the input is of the proper length.
+            
+            assert len(final_input) == ((steps_to_retain * 7) + 5), \
+                "Input space is of the wrong length."
 
             # Convert the input space to a tensor, and feed that to the network
             #  to get the probabilities for each of the 5 possible actions.
@@ -259,6 +270,7 @@ class Simulation():
                 if chain_rewards:
                     previous_step_reward = previous_action_spaces_and_choices[len(previous_action_spaces_and_choices) - 1][6]
                     result_to_be_added = valid_step_reward + previous_step_reward
+                    assert (result_to_be_added == (valid_step_reward + previous_step_reward))
                 else:
                     result_to_be_added = valid_step_reward
             
@@ -266,6 +278,7 @@ class Simulation():
             #  result of the step. Populate that into the previous choices
             #  array for the next step/iteration of this loop.
             
+            self.assertIsNotNone(result_to_be_added)
             this_step_and_results = deepcopy(action_space_values)
             this_step_and_results.append(nn_action)
             this_step_and_results.append(result_to_be_added)   

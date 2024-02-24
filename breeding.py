@@ -22,7 +22,7 @@ class Breeding(unittest.TestCase):
     The sub-methods perform the actual crossing and mutation of the passed floats.
     """
     
-    def cross_and_mutate(
+    def network_cross_and_mutate(
         self,
         sim_population,
         serial_number,
@@ -155,7 +155,7 @@ class Breeding(unittest.TestCase):
         for i in range (len(child_network_weights[0])):
             # Crossover
             
-            child_network_weights[0][i] = self.c_and_m(
+            child_network_weights[0][i] = self.float_cross_and_mutate(
                 "weight",
                 child_network_weights[0][i],
                 parent_2_nn_weights_bias[0][0][i],
@@ -198,7 +198,7 @@ class Breeding(unittest.TestCase):
         for layer in range(len(child_nn_definition["hidden_layers"])):
             # Crossover, for each type and activation
             
-            child_nn_definition["hidden_layers"][layer]["activation"] = self.c_and_m(
+            child_nn_definition["hidden_layers"][layer]["activation"] = self.float_cross_and_mutate(
                 "definition",
                 child_nn_definition["hidden_layers"][layer]["activation"],
                 parent_2_nn_definition["hidden_layers"][layer]["activation"],
@@ -206,7 +206,7 @@ class Breeding(unittest.TestCase):
                 point_mutation_amount,
                 fitness_bias
                 )
-            child_nn_definition["hidden_layers"][layer]["type"] = self.c_and_m(
+            child_nn_definition["hidden_layers"][layer]["type"] = self.float_cross_and_mutate(
                 "definition",
                 child_nn_definition["hidden_layers"][layer]["type"],
                 parent_2_nn_definition["hidden_layers"][layer]["type"],
@@ -244,7 +244,7 @@ class Breeding(unittest.TestCase):
             
         # Crossover, for each type and activation     
            
-        child_nn_definition["output"]["type"] = self.c_and_m(
+        child_nn_definition["output"]["type"] = self.float_cross_and_mutate(
             "definition",
             child_nn_definition["output"]["type"],
             parent_2_nn_definition["output"]["type"],
@@ -252,7 +252,7 @@ class Breeding(unittest.TestCase):
             point_mutation_amount,
             fitness_bias
             )       
-        child_nn_definition["output"]["activation"] = self.c_and_m(
+        child_nn_definition["output"]["activation"] = self.float_cross_and_mutate(
             "definition",
             child_nn_definition["output"]["activation"],
             parent_2_nn_definition["output"]["activation"],
@@ -307,7 +307,7 @@ class Breeding(unittest.TestCase):
         for i in range (len(child_network_output_weights[0])):
             # Crossover
             
-            child_network_output_weights[0][i] = self.c_and_m(
+            child_network_output_weights[0][i] = self.float_cross_and_mutate(
                 "weight",
                 child_network_output_weights[0][i],
                 parent_2_nn_output_weights_bias[0][0][i],
@@ -354,12 +354,7 @@ class Breeding(unittest.TestCase):
     
         return child_nn_obj
     
-    
-    def carry_over():
-        pass
-    
-    
-    def c_and_m(
+    def float_cross_and_mutate(
         self,
         weight_or_def,
         child_value,

@@ -137,14 +137,13 @@ class TestGeneticAlgorithm(unittest.TestCase):
             #  population to produce a new population.
             sim_population.create_fitness_map()
             new_population = population.Population()
-            # This should probably be static. Look into it and fix. -------------------------------------------------------------------------------------------------------
             breeder = breeding.Breeding()
             
             # For each new child neural network that is required, run the
             #  breeder and add the child nn to the new population.
             
             for new_child_nn in range(size_new_generations):
-                new_child_nn_obj = breeder.cross_and_mutate(
+                new_child_nn_obj = breeder.network_cross_and_mutate(
                     sim_population,
                     serial_number,
                     point_mutation_scalar,
@@ -159,16 +158,21 @@ class TestGeneticAlgorithm(unittest.TestCase):
 
             
             # Carryover - retaining most fit network(s) from prev generation.
+            # The concept of carryover is not evolution or breeding, so it's 
+            #  intentionally not in that class.
+            
             if size_new_generations != max_population_size:
                 # Get the number of networks to carry over from the old
                 #  generation to the new, capped at the number of networks
                 #  in the old generation.
+                
                 size_prev_gen = sim_population.get_population_size()
                 carryover_count = max_population_size - size_new_generations
                 carryover_count = min(carryover_count, size_prev_gen)
                 
                 # Gather the fitnesses of the previous generation, and use numpy
                 #  to create a list sorting the element positions by fitness
+                
                 all_fitnesses_prev_gen = []
                 for i in range(size_prev_gen):
                     all_fitnesses_prev_gen.append(sim_population.get_nn_fitness(i))

@@ -62,8 +62,8 @@ class Simulation(unittest.TestCase):
         
         tw_game_index = TextworldGames.TextworldGames()
         self.assertIsNotNone(_code)
-        max_steps = tw_game_index.getGameMaxSteps(_code)
-        file_path = tw_game_index.getGamePath(_code)
+        max_steps = tw_game_index.get_game_max_steps(_code)
+        file_path = tw_game_index.get_game_path(_code)
         self.assertIsNotNone(file_path)
         
         # Pass the arguments to Gym to build the TextWorld/Gym ID for this game.

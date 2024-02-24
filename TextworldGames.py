@@ -16,10 +16,10 @@ class TextworldGames():
         # and write something separately that creates world and writes the names and maximum steps to that csv
         
     
-    def getGamePath(self, code):
+    def get_game_path(self, code):
         file_path = None
         file_path = self.path + "/" + self.games_and_paths[code]["filename"]
         return file_path
     
-    def getGameMaxSteps(self, code):
+    def get_game_max_steps(self, code):
         return self.games_and_paths[code]["max_steps"]

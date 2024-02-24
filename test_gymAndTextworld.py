@@ -23,14 +23,14 @@ import random
 # !pip3 install gymnasium
 # !pip3 install textworld
 
-class testTextWorld(unittest.TestCase):
-    def registerEnvId(self, code, env_parameters):
+class TestTextWorld(unittest.TestCase):
+    def register_env_id(self, code, env_parameters):
         print("testRegisterEnvId")
         tw_game_index = TextworldGames.TextworldGames()
         # maximum number of steps, basically a peak fitness network
-        max_steps = tw_game_index.getGameMaxSteps(code)
+        max_steps = tw_game_index.get_game_max_steps(code)
         self.assertIsNotNone(code)
-        file_path = tw_game_index.getGamePath(code)
+        file_path = tw_game_index.get_game_path(code)
         self.assertIsNotNone(file_path)
         environment_id = textworld.gym.register_game(file_path, env_parameters, max_episode_steps = max_steps)
         self.assertIsInstance(environment_id, str)
@@ -39,7 +39,7 @@ class testTextWorld(unittest.TestCase):
     # def makeGym(self, environment_id):
     #     print("testMakeGym")
         
-    def testMain(self):
+    def test_main(self):
         print("main")
         
         # setup the parameters for the textworld

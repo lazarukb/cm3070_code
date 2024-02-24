@@ -24,7 +24,7 @@ def main(parameters):
     # Initialise and run, getting the simulation's average fitness for later.
     
     simulation = test_and_run_genetic_algorithm.TestGeneticAlgorithm()
-    avg_fit = simulation.testGeneticAlgorithm(parameters)
+    avg_fit = simulation.test_genetic_algorithm(parameters)
     
     return avg_fit
     

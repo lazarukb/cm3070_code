@@ -28,7 +28,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
     
     # Initial processing flow of this code was derived, but also fully re-typed
     # and edited, from that presented in lectures in CM3020.
-    def testGeneticAlgorithm(self, parameters):
+    def test_genetic_algorithm(self, parameters):
         """Main control for the execution of the genetic algorithm.
 
         Commands the initialisation of the Simulation and Population objects as needed.

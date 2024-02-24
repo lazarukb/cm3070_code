@@ -21,9 +21,6 @@ class TestGeneticAlgorithm(unittest.TestCase):
     Commands the Population to seed itself with initial random networks.
     Commands the simulation to evaluate and perform crossover on the Population.
     Causes reporting metrics to be created and stored.
-
-    Attributes:
-    remove this: only need to be here if there is an __init__ ----------------------------------------------------------------------=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=----------------
     """
     
     # Initial processing flow of this code was derived, but also fully re-typed

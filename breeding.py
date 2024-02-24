@@ -9,7 +9,6 @@ Typical usage example:
   bar = foo.cross_and_mutate()
 """
 
-import population
 import unittest
 from copy import deepcopy
 import random

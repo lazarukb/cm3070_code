@@ -7,7 +7,6 @@ Initial point for configuring the experimental parameters and triggering the
 
 import test_and_run_genetic_algorithm
 import datetime
-import os
 import reporting
         
 def main(parameters):

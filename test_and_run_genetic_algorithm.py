@@ -8,7 +8,7 @@ Causes reporting metrics to be created and stored.
 
 import unittest
 import population
-import simulation_utest
+import simulation
 from copy import deepcopy
 import numpy as np
 import reporting
@@ -107,7 +107,7 @@ class TestGeneticAlgorithm(unittest.TestCase):
         
         # Create the simulation environment
         
-        sim_environment = simulation_utest.Simulation()
+        sim_environment = simulation.Simulation()
         
         # Run the networks through the gym and gather their fitness scores
         

@@ -31,15 +31,16 @@ def main(parameters):
     
 
 if __name__ == "__main__":
+    # Initialising for some statistics
     
     start = datetime.datetime.now()
     cumulative = {'generations': 0, 'networks' : 0}
-    
     max_fitness = []
     
     # Defaults
+    
     parameters = {
-        'experiment_number': '1100',
+        'experiment_number': '1',
         'subfolder': '',
         'experiment_comment': "Testing while editing for formatting",
         'generations': 10,
@@ -60,17 +61,8 @@ if __name__ == "__main__":
         'chain_rewards': False
     }
     
-    
-    # For an individual experiment, run these lines
-    # Get the timestamp to name the subfolder
-    # parameters['subfolder'] = str(datetime.datetime.now().timestamp())
-    # main(parameters)
-    # quit()
-    
-    
-    # For banks of experiments, comment out above, and run these lines.
-    # This is exponential so do be careful with how many choices there are
-    # Ranges
+    # This is exponential so do be careful with how many choices there are.
+
     parameter_ranges = {
         'generations': [5],
         'size_new_generations': [10],
@@ -83,7 +75,7 @@ if __name__ == "__main__":
         'game': ['coin_collector_5'],
         'steps_to_retain': [3],
         'fitness_bias_scalar': [0.25],
-        'failed_step_reward': [-1],
+        'failed_step_reward': [-2, 0],
         'valid_step_reward': [5],
         'force_random_choice': [False],
         'force_pickup': [False],
@@ -91,8 +83,9 @@ if __name__ == "__main__":
     }
     
     # Modification loops
-    # Ignoring the 80 character line limit here to ensure this remains
-    #  readable and understandable in case of troubleshooting.
+    # Ignoring the 80 character line limit here to ensure this remains both
+    #  readable and manually traversable in case of troubleshooting.
+    
     for chain in range(len(parameter_ranges['chain_rewards'])):
         parameters['chain_rewards'] = parameter_ranges['chain_rewards'][chain]
         for f_pickup in range(len(parameter_ranges['force_pickup'])):
@@ -127,60 +120,27 @@ if __name__ == "__main__":
                                                                     parameters['generations'] = parameter_ranges['generations'][gener]
                                                                     
                                                                     # Get the timestamp to name the subfolder
+                                                                    
                                                                     parameters['subfolder'] = str(datetime.datetime.now().timestamp())
                                                                     # And run the experiment
+                                                                    
                                                                     avg_fit = main(parameters)
                                                                     
                                                                     # Store max fitness and other stats
+                                                                    
                                                                     max_fitness.append([parameters['subfolder'], avg_fit])
                                                                     cumulative['generations'] += parameters['generations']
                                                                     cumulative['networks'] += parameters['size_new_generations']
                                                                     
 
     
-    # Report the folders by highest average fitnesses
+    # Report the folders by highest average fitnesses, and other statistics.
+    
     most_fit_folders = sorted(max_fitness, key=lambda x: x[1], reverse=True)
-    
-    # Now output this list to disk in the root of the experiment folder
-    # MOVE THIS TO REPORTING - THATS WHERE REPORTING GOES
-    with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment_" + str(datetime.datetime.now().microsecond) + ".csv", 'w') as f:
-        header = ("subfolder","fitness",)
-        for ele in header:
-            f.write(ele + ",")
-        f.write("\n")
-        
-        for line in most_fit_folders:
-            f.write(f"{str(line[0])},{str(line[1])},\n")
-        f.write("\n")
-        
-        
     end = datetime.datetime.now()
-    elapsed = end - start
+    cumulative['elapsed'] = end - start
+    cumulative['unique_stamp'] = str(datetime.datetime.now().microsecond)
+    print(f"Total duration of the sim: {cumulative['elapsed']}, which is {cumulative['elapsed'] / cumulative['generations']} per generation, or approximately {cumulative['elapsed'] / cumulative['networks']} per network.")
     
-    print(f"Total duration of the sim: {elapsed}, which is {elapsed / cumulative['generations']} per generation, or {elapsed / cumulative['networks']} per network.")
-                                 
-    # Per experiment to change the parameters
-    # Number of steps to be retained to the input tensor directly affects the 
-    #  inputs to the nn. 
-    # main(parameters)
+    reporting.Reporting.output_runtime_stats_to_csv(most_fit_folders, parameters, cumulative)
     
-    # # Per experiment to change the parameters
-    # parameters = {'experiment_number': 1,
-    #                 'experiment_comment': "development - no experiment being saved",
-    #                 'generations': 10,
-    #                 'size_new_generations': 10,
-    #                 'max_population_size': 11,
-    #                 'point_mutation_chance': 0.3,
-    #                 'point_mutation_amount': 0.35,
-    #                 'point_mutation_chance_max': 0.75,
-    #                 'point_mutation_amount_max': 0.5,
-    #                 'point_mutation_scalar': 5,
-    #                 'force_random_choice': False,
-    #                 'force_pickup': False,
-    #                 'game': 'coin_collector_5',
-    #                 'steps_to_retain': 5,
-    #                 'fitness_bias_scalar': 0.25,
-    #                 'failed_step_reward': 0,
-    #                 'valid_step_reward': 5,
-    #                 'chain_rewards': False}
-    # main(parameters)

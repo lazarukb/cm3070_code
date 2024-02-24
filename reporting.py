@@ -93,7 +93,7 @@ class Reporting():
             quit(1)
         
     
-    def output_to_csv(parameters, report):
+    def output_simulation_to_csv(parameters, report):
         """Outputs the large reporting dict to various CSV files.
 
         Performs fitness average calculations and stores the outputs of each
@@ -248,3 +248,35 @@ class Reporting():
         os.mkdir("experiments/" + str(fulldir) + "/!-- simulation average fitness -- " + str(sim_avg_fitness))
         
         return sim_avg_fitness
+
+
+    def output_runtime_stats_to_csv(most_fit_folders, parameters, cumulative):
+        """Outputs per experiment and per runtime statistics to CSV..
+         
+        Args:
+            parameters: DICT containing all the experimental settings. The 
+             comment, experiment number, and subfolder are used here.
+            cumulative: DICT containing some runtime stats such as total
+             elapsed time.
+
+        Returns:
+            None - outputs to disk.
+        """
+        
+        with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
+            header = ("subfolder","fitness",)
+            for ele in header:
+                f.write(ele + ",")
+            f.write("\n")
+            
+            for line in most_fit_folders:
+                f.write(f"{str(line[0])},{str(line[1])},\n")
+            f.write("\n")
+            
+        with open("experiments/" + str(parameters['experiment_number']) + "/cumulative_runtime_stats_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
+            header = ("elapsed time","time per generation","time per network",)
+            for ele in header:
+                f.write(ele + ",")
+            f.write("\n")
+            f.write(f"{cumulative['elapsed']},{cumulative['elapsed'] / cumulative['generations']},{cumulative['elapsed'] / cumulative['networks']},\n")
+            f.write("\n")

@@ -64,8 +64,8 @@ if __name__ == "__main__":
 
     parameter_ranges = {
         'generations': [5],
-        'size_new_generations': [10],
-        'max_population_size': [15],
+        'size_new_generations': [5],
+        'max_population_size': [6],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         'game': ['coin_collector_5'],
         'steps_to_retain': [3],
         'fitness_bias_scalar': [0.25],
-        'failed_step_reward': [-2, 0],
+        'failed_step_reward': [-2],
         'valid_step_reward': [5],
         'force_random_choice': [False],
         'force_pickup': [False],

@@ -44,7 +44,7 @@ class Simulation(unittest.TestCase):
             score = True
         )
     
-    def registerEnvId(self, code):
+    def register_env_id(self, _code):
         """Creates the Gymnasium environment, attached to a specified TextWorld game.
 
         As necessary, expand here.
@@ -61,9 +61,9 @@ class Simulation(unittest.TestCase):
         # Initialise the TextWorld games library, and read from it.
         
         tw_game_index = TextworldGames.TextworldGames()
-        self.assertIsNotNone(code)
-        max_steps = tw_game_index.getGameMaxSteps(code)
-        file_path = tw_game_index.getGamePath(code)
+        self.assertIsNotNone(_code)
+        max_steps = tw_game_index.getGameMaxSteps(_code)
+        file_path = tw_game_index.getGamePath(_code)
         self.assertIsNotNone(file_path)
         
         # Pass the arguments to Gym to build the TextWorld/Gym ID for this game.
@@ -110,7 +110,7 @@ class Simulation(unittest.TestCase):
             
         """
         
-        environment_id, max_steps = self.registerEnvId(game)
+        environment_id, max_steps = self.register_env_id(game)
         environment = textworld.gym.make(environment_id)
         obs, infos = environment.reset()
         self.assertIsInstance(obs, str)

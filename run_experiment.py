@@ -36,36 +36,21 @@ if __name__ == "__main__":
     cumulative = {'generations': 0, 'networks' : 0}
     max_fitness = []
     
-    # Defaults
+    # Defaults, fixed values that do not iterate.
     
     parameters = {
         'experiment_number': '1',
         'subfolder': '',
         'experiment_comment': "Testing while editing for formatting",
-        'generations': 10,
-        'size_new_generations': 10,
-        'max_population_size': 11,
-        'point_mutation_chance': 0.3,
-        'point_mutation_amount': 0.35,
-        'point_mutation_chance_max': 0.75,
-        'point_mutation_amount_max': 0.5,
-        'point_mutation_scalar': 5,
-        'game': 'coin_collector_5',
-        'steps_to_retain': 10,
-        'fitness_bias_scalar': 0.25,
-        'failed_step_reward': 0,
-        'valid_step_reward': 5,
-        'force_random_choice': False,
-        'force_pickup': False,
-        'chain_rewards': False
     }
     
+    # Iterating parameter values.
     # This is exponential so do be careful with how many choices there are.
 
     parameter_ranges = {
-        'generations': [5],
-        'size_new_generations': [5],
-        'max_population_size': [6],
+        'generations': [15],
+        'size_new_generations': [15],
+        'max_population_size': [16],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
@@ -81,7 +66,7 @@ if __name__ == "__main__":
         'chain_rewards': [False]
     }
     
-    # Modification loops
+    # Modification loops to fill in the parameters for a single experiment.
     # Ignoring the 80 character line limit here to ensure this remains both
     #  readable and manually traversable in case of troubleshooting.
     

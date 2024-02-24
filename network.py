@@ -40,7 +40,7 @@ class Network:
         self,
         serial_number,
         inputs_size,
-        hidden_layers_count = 1
+        hidden_layers_count=1
         ):
         """Builds random DNA values and stores in the instance.
 

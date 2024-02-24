@@ -107,7 +107,7 @@ class Breeding(unittest.TestCase):
         self.assertIsInstance(parent_1_nn_definition, dict)
         self.assertIsInstance(parent_2_nn_definition, dict)
         
-        # Get parental hidden layers element, assuming there is one hidden layer 
+        # Get parental hidden layers element
                        
         parent_1_nn_weights_bias = sim_population.get_weight_bias_definitions(parent_1, 1)
         parent_2_nn_weights_bias = sim_population.get_weight_bias_definitions(parent_2, 1)
@@ -134,7 +134,7 @@ class Breeding(unittest.TestCase):
         #  thus achieving crossover breeding.
         
         child_network_weights_bias = deepcopy(parent_1_nn_weights_bias)
-        child_network_weights = child_network_weights_bias[0]                             ##### currently assuming that there is only one hidden layer
+        child_network_weights = child_network_weights_bias[0]
 
         # This assert checks that the parents are fully different 
         #  because their weight checksums are different.
@@ -273,9 +273,7 @@ class Breeding(unittest.TestCase):
 
         # This will retrieve the last elements of the layers information,
         #  which will be the output layer.
-        # Continues to assume there is only one hidden layer
-        #  which needs to be changed later on.
-        # This layer also has 512 weights #####################################################################################
+        # This layer also has 512 weights
         
         parent_1_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_1, 2)
         parent_2_nn_output_weights_bias = sim_population.get_weight_bias_definitions(parent_2, 2)
@@ -285,7 +283,7 @@ class Breeding(unittest.TestCase):
         #  thus achieving crossover breeding.
         
         child_network_output_weights_bias = deepcopy(parent_1_nn_output_weights_bias)
-        child_network_output_weights = child_network_output_weights_bias[0]       ##### currently assuming that there is only one hidden layer
+        child_network_output_weights = child_network_output_weights_bias[0]
         child_network_output_weights_initial = deepcopy(child_network_output_weights)
         
         # Randomly sample to make sure the copy worked

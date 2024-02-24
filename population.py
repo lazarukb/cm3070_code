@@ -138,7 +138,7 @@ class Population():
             if random_seed <= self.fitness_map[network]:
                 return network
         
-    def save_weight_bias_definitions(self, network_id, layer, _weights):
+    def save_weight_bias_definitions(self, network_id, layer, weights):
         """Set the weight definitions of a given layer.
 
         Given the provided weights, save them to the Network instance definition.
@@ -152,7 +152,7 @@ class Population():
             None. Updates the Network instance stored in self.
         """
         
-        self.networks[network_id].save_weight_bias_definitions(layer, _weights)
+        self.networks[network_id].save_weight_bias_definitions(layer, weights)
         
     '''Get the weights definitions of a given layer on a given network in this population'''
     def get_weight_bias_definitions(self, network_id, layer):

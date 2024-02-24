@@ -44,7 +44,7 @@ class Simulation(unittest.TestCase):
             score = True
         )
     
-    def register_env_id(self, _code):
+    def register_env_id(self, code):
         """Creates the Gymnasium environment, attached to a specified TextWorld game.
 
         As necessary, expand here.
@@ -61,9 +61,9 @@ class Simulation(unittest.TestCase):
         # Initialise the TextWorld games library, and read from it.
         
         tw_game_index = TextworldGames.TextworldGames()
-        self.assertIsNotNone(_code)
-        max_steps = tw_game_index.get_game_max_steps(_code)
-        file_path = tw_game_index.get_game_path(_code)
+        self.assertIsNotNone(code)
+        max_steps = tw_game_index.get_game_max_steps(code)
+        file_path = tw_game_index.get_game_path(code)
         self.assertIsNotNone(file_path)
         
         # Pass the arguments to Gym to build the TextWorld/Gym ID for this game.
@@ -301,10 +301,10 @@ class Simulation(unittest.TestCase):
     def evaluate_population(
         self,
         sim_population,
-        _game,
-        _force_random_choice,
-        _force_pickup,
-        _steps_to_retain,
+        game,
+        force_random_choice,
+        force_pickup,
+        steps_to_retain,
         failed_step_reward,
         valid_step_reward,
         chain_rewards
@@ -317,12 +317,12 @@ class Simulation(unittest.TestCase):
          
         Args:
             sim_population: the Population instance to be evaluated.
-            _game: INT the ID of the TextWorld/Gym environment to be used.
-            _force_random_choice: Boolean to force random movement if a the network
+            game: INT the ID of the TextWorld/Gym environment to be used.
+            force_random_choice: Boolean to force random movement if a the network
              is repeating a previously failed action.
-            _force_pickup: Boolean to force the network to choose to pick up an
+            force_pickup: Boolean to force the network to choose to pick up an
              available coin, thus winning the game.
-            _steps_to_retain: INT number of previous steps to be included 
+            steps_to_retain: INT number of previous steps to be included 
              in the input tensor for each new step.
             failed_step_reward: INT reward for making an invalid choice.
             valid_step_reward: INT reward for making a valid choice.
@@ -350,10 +350,10 @@ class Simulation(unittest.TestCase):
             
             fitness = self.apply_nn_to_textworld(
                 nn_obj,
-                _game,
-                _force_random_choice,
-                _force_pickup,
-                _steps_to_retain,
+                game,
+                force_random_choice,
+                force_pickup,
+                steps_to_retain,
                 failed_step_reward,
                 valid_step_reward,
                 chain_rewards

@@ -123,7 +123,7 @@ class Network:
         
         return self.fitness
     
-    def set_fitness(self, _fitness):
+    def set_fitness(self, fitness):
         """Setter to save the stored fitness score for this instance.
 
         Args:
@@ -133,7 +133,7 @@ class Network:
             None. Modifies the instance.
         """
         
-        self.fitness = _fitness
+        self.fitness = fitness
         
     def get_weight_bias_definitions(self, layer):
         """Get the weights of a specified layer from this instance.
@@ -152,7 +152,7 @@ class Network:
         
         return self.weights[layer - 1]
     
-    def save_weight_bias_definitions(self, layer, _weights):
+    def save_weight_bias_definitions(self, layer, weights):
         """Save the weights of a specified layer back to this instance.
 
         Appends the weights as necessary or if the layer is already defined,
@@ -160,16 +160,16 @@ class Network:
 
         Args:
             layer: INT (whole number) of the layer to be updated, or created.
-            _weights: array of the weights to be stored.
+            weights: array of the weights to be stored.
 
         Returns:
             None. Modifies the instance.
         """
         
         if len(self.weights) == 0 or len(self.weights) < layer + 1:
-            self.weights.append(_weights)
+            self.weights.append(weights)
         else:
-            self.weights[layer] = _weights
+            self.weights[layer] = weights
     
     def get_network_model(self):
         """Builds the keras nn.Model of this instance, updating checksums.
@@ -307,24 +307,24 @@ class Network:
         return total
              
         
-    def get_activation_function_keyword(self, _activation):
+    def get_activation_function_keyword(self, activation):
         """Determines keyword matching the activation function definition value.
         
         Args:
-            _activation: float value between 0.0 - 1.0
+            activation: float value between 0.0 - 1.0
 
         Returns:
             String keyword of the activation function type.
         """
         
-        match _activation:
-            case _activation if 0.0 <= _activation < 0.25:
+        match activation:
+            case activation if 0.0 <= activation < 0.25:
                 activation_type = "relu"
-            case _activation if 0.25 <= _activation < 0.50:
+            case activation if 0.25 <= activation < 0.50:
                 activation_type = "linear"
-            case _activation if 0.50 <= _activation <= 0.75:
+            case activation if 0.50 <= activation <= 0.75:
                 activation_type = "sigmoid"
-            case _activation if 0.75 <= _activation <= 1.0:
+            case activation if 0.75 <= activation <= 1.0:
                 activation_type = "tanh"
         return activation_type
     

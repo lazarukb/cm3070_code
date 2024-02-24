@@ -143,8 +143,6 @@ class Reporting():
                 "checksum",
                 "parent_1",
                 "parent_2",
-                "hidden_weights",
-                "output_weights",
                 "hidden_checksum",
                 "output_checksum",
                 "input",

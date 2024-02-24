@@ -30,8 +30,6 @@ class Network:
                 "checksum": 0,
                 "parent_1": None,
                 "parent_2": None,
-                "hidden_weights": None,
-                "output_weights": None
                 },
             "inputs": None,
             "hidden_layers": [],

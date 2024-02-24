@@ -33,8 +33,6 @@ class Genome():
             "checksum": None,
             "parent_1": None,
             "parent_2": None,
-            "hidden_weights": None,
-            "output_weights": None
             }
         
         # Define the hidden layers

@@ -32,7 +32,7 @@ class Reporting():
         return results
     
     
-    def create_folders(parameters):
+    def create_folders(hyperparameters):
         """Creates the reporting folder structure on disk.
 
         If the experiment number is specified as 0 then no reporting to disk
@@ -52,9 +52,9 @@ class Reporting():
              overwriting existing experimental results.
         """
         
-        comment = parameters['experiment_comment']
-        maindir = parameters['experiment_number']
-        subdir = parameters['subfolder']
+        comment = hyperparameters['collection_comment']
+        maindir = hyperparameters['collection_number']
+        subdir = hyperparameters['experiment']
         fulldir = maindir + "/" + subdir
         if subdir == 0 or maindir == 0:
             return
@@ -93,7 +93,7 @@ class Reporting():
             quit(1)
         
     
-    def output_simulation_to_csv(parameters, report):
+    def output_simulation_to_csv(hyperparameters, report):
         """Outputs the large reporting dict to various CSV files.
 
         Performs fitness average calculations and stores the outputs of each
@@ -113,8 +113,8 @@ class Reporting():
              returned by each individual set of experimental parameters.
         """
         
-        maindir = parameters['experiment_number']
-        subdir = parameters['subfolder']
+        maindir = hyperparameters['collection_number']
+        subdir = hyperparameters['experiment']
         fulldir = maindir + "/" + subdir
         
         if subdir == 0 or maindir == 0:
@@ -248,12 +248,12 @@ class Reporting():
         return sim_avg_fitness
 
 
-    def output_runtime_stats_to_csv(most_fit_folders, parameters, cumulative):
+    def output_runtime_stats_to_csv(most_fit_folders, hyperparameters, cumulative):
         """Outputs per experiment and per runtime statistics to CSV..
          
         Args:
-            parameters: DICT containing all the experimental settings. The 
-             comment, experiment number, and subfolder are used here.
+            hyperparameters: DICT containing all the experimental settings. The 
+             comment, collection number and experiment number are used here.
             cumulative: DICT containing some runtime stats such as total
              elapsed time.
 
@@ -261,8 +261,8 @@ class Reporting():
             None - outputs to disk.
         """
         
-        with open("experiments/" + str(parameters['experiment_number']) + "/fitness_summary_by_experiment_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
-            header = ("subfolder","fitness",)
+        with open("experiments/" + str(hyperparameters['collection_number']) + "/fitness_summary_by_experiment_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
+            header = ("experiment","fitness",)
             for ele in header:
                 f.write(ele + ",")
             f.write("\n")
@@ -271,7 +271,7 @@ class Reporting():
                 f.write(f"{str(line[0])},{str(line[1])},\n")
             f.write("\n")
             
-        with open("experiments/" + str(parameters['experiment_number']) + "/cumulative_runtime_stats_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
+        with open("experiments/" + str(hyperparameters['collection_number']) + "/cumulative_runtime_stats_" + cumulative['unique_stamp'] + ".csv", 'w') as f:
             header = ("elapsed time","time per generation","time per network",)
             for ele in header:
                 f.write(ele + ",")

@@ -41,24 +41,24 @@ if __name__ == "__main__":
     # Don't put commas in the comment!
     
     hyperparameters = {
-        'collection_number': '4430',
+        'collection_number': '4500',
         'experiment': '',
-        'collection_comment': "Exploring mutation parameters 3",
+        'collection_comment': "Exploring generation count and size and carryover",
     }
     
     # Iterating hyperparameter values.
     # This is exponential so do be careful with how many choices there are.
 
     hyperparameter_ranges = {
-        'generations': [20],
-        'size_new_generations': [50],
-        'max_population_size': [55],
-        'point_mutation_chance': [0.1, 0.3],
+        'generations': [20, 100],
+        'size_new_generations': [20, 200],
+        'carryover_count': [0, 2, 10],
+        'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
-        'point_mutation_amount_max': [0.1, 0.3, 0.5, 0.8],
-        'point_mutation_scalar': [0.3, 0.5, 0.8],
-        'game': ['coin_collector_15'],
+        'point_mutation_amount_max': [0.1],
+        'point_mutation_scalar': [0.8],
+        'game': ['coin_collector_5'],
         'steps_to_retain': [50],
         'fitness_bias_scalar': [0.25],
         'failed_step_reward': [-1],
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # hyperparameter_ranges = {
     #     'generations': [5],
     #     'size_new_generations': [10],
-    #     'max_population_size': [12],
+    #     'carryover_count': [12],
     #     'point_mutation_chance': [0.3],
     #     'point_mutation_amount': [0.35],
     #     'point_mutation_chance_max': [0.75],
@@ -127,8 +127,8 @@ if __name__ == "__main__":
                                                     hyperparameters['point_mutation_amount'] = hyperparameter_ranges['point_mutation_amount'][p_m_a]
                                                     for p_m_c in range(len(hyperparameter_ranges['point_mutation_chance'])):
                                                         hyperparameters['point_mutation_chance'] = hyperparameter_ranges['point_mutation_chance'][p_m_c]
-                                                        for max_pop in range(len(hyperparameter_ranges['max_population_size'])):
-                                                            hyperparameters['max_population_size'] = hyperparameter_ranges['max_population_size'][max_pop]
+                                                        for carryover in range(len(hyperparameter_ranges['carryover_count'])):
+                                                            hyperparameters['carryover_count'] = hyperparameter_ranges['carryover_count'][carryover]
                                                             for s_new in range(len(hyperparameter_ranges['size_new_generations'])):
                                                                 hyperparameters['size_new_generations'] = hyperparameter_ranges['size_new_generations'][s_new]
                                                                 for gener in range(len(hyperparameter_ranges['generations'])):

@@ -50,7 +50,7 @@ class TestGeneticAlgorithm():
         
         generations = parameters['generations']
         size_new_generations = parameters['size_new_generations']
-        max_population_size = parameters['max_population_size']
+        carryover_count = parameters['carryover_count']
         point_mutation_chance = parameters['point_mutation_chance']
         point_mutation_amount = parameters['point_mutation_amount']
         point_mutation_chance_max = parameters['point_mutation_chance_max']
@@ -156,20 +156,20 @@ class TestGeneticAlgorithm():
             # The concept of carryover is not evolution or breeding, so it's 
             #  intentionally not in that class.
             
-            if size_new_generations != max_population_size:
-                # Get the number of networks to carry over from the old
-                #  generation to the new, capped at the number of networks
-                #  in the old generation.
+            if carryover_count != 0:
+                # # Get the number of networks to carry over from the old
+                # #  generation to the new, capped at the number of networks
+                # #  in the old generation.
                 
-                size_prev_gen = sim_population.get_population_size()
-                carryover_count = max_population_size - size_new_generations
-                carryover_count = min(carryover_count, size_prev_gen)
+                # size_prev_gen = sim_population.get_population_size()
+                # carryover_count = max_population_size - size_new_generations
+                # carryover_count = min(carryover_count, size_prev_gen)
                 
                 # Gather the fitnesses of the previous generation, and use numpy
                 #  to create a list sorting the element positions by fitness
                 
                 all_fitnesses_prev_gen = []
-                for i in range(size_prev_gen):
+                for i in range(carryover_count):
                     all_fitnesses_prev_gen.append(sim_population.get_nn_fitness(i))
                 all_fitnesses_prev_gen = np.asarray(all_fitnesses_prev_gen)
                 most_fit_networks = np.argsort(all_fitnesses_prev_gen)
@@ -182,7 +182,6 @@ class TestGeneticAlgorithm():
                 for i in range(carryover_count):
                     if sim_population.get_nn_fitness(most_fit_networks_desc[i]) > 1:
                         # Build definition of a network from candidate network
-                        
                         import_nn_definition = {}
                         import_nn_definition = sim_population.get_neural_network_def(most_fit_networks_desc[i])
                         import_nn_weights_bias = sim_population.get_weight_bias_definitions(most_fit_networks_desc[i], 1)
@@ -201,7 +200,7 @@ class TestGeneticAlgorithm():
                             import_nn_parent_2
                             )
                         new_population.add_nn(import_nn_obj)
-                           
+            
             # Check any carried-over networks against the previous versions to
             #  ensure they are EXACTLY the same from generation to generation.
             

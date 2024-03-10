@@ -1,0 +1,20 @@
+@startuml
+class Network {
+    create_random_network_dna()
+    get_network_dna()
+    create_specified_network_dna()
+    get_fitness()
+    set_fitness()
+    get_weight_bias_definitions()
+    save_weight_bias_definitions()
+    get_network_model()
+    checksum_weights()
+    checksum()
+    get_activation_function_keyword()
+        genome
+    fitness
+    dna
+    fitness
+    __init__()
+}
+@enduml

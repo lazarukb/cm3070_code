@@ -1,0 +1,9 @@
+@startuml
+class Simulation {
+    register_env_id()
+    apply_nn_to_textworld()
+    evaluate_population()
+        env_parameters
+    __init__()
+}
+@enduml

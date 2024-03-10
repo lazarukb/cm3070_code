@@ -10,7 +10,8 @@ class TextworldGames():
         self.games_and_paths = {
             "2-3-10-v1": {"filename": "game_2-3-10-v1.ulx", "max_steps": 25},
             "coin_collector_5": {"filename": "tw-coin_collector-mKimsM-house-mo-010Gsa0Qf6BWHNep.ulx", "max_steps": 150},
-            "coin_collector_15": {"filename": "tw-coin_collector-o0i5F0-house-mo-EKBgf9N2TYBPs3mJ.ulx", "max_steps": 450}
+            "coin_collector_15": {"filename": "tw-coin_collector-o0i5F0-house-mo-EKBgf9N2TYBPs3mJ.ulx", "max_steps": 450},
+            "coin_collector_50": {"filename": "tw-coin_collector-yjiNjCMb-house-mo-OEXXir9RFGXqSN1q.ulx", "max_steps": 1500}
         }
         """Holds the locations and parameters of the maze games.
 

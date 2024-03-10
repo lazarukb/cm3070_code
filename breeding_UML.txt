@@ -1,0 +1,7 @@
+@startuml
+class Breeding {
+    network_cross_and_mutate()
+    float_cross_and_mutate()
+        __init__()
+}
+@enduml

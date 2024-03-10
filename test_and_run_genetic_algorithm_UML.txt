@@ -1,0 +1,6 @@
+@startuml
+class TestGeneticAlgorithm {
+    test_genetic_algorithm()
+        __init__()
+}
+@enduml

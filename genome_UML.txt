@@ -1,0 +1,7 @@
+@startuml
+class Genome {
+    create_random_genome()
+    get_gene_specifications()
+        __init__()
+}
+@enduml

@@ -1,0 +1,18 @@
+@startuml
+class Population {
+    create_random_population()
+    get_population_size()
+    get_neural_network_def()
+    set_nn_fitness()
+    get_nn_fitness()
+    create_fitness_map()
+    get_fitness_map()
+    get_weighted_parent()
+    save_weight_bias_definitions()
+    get_weight_bias_definitions()
+    get_neural_network_model()
+    create_nn()
+    add_nn()
+        __init__()
+}
+@enduml

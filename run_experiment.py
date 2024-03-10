@@ -41,25 +41,25 @@ if __name__ == "__main__":
     # Don't put commas in the comment!
     
     hyperparameters = {
-        'collection_number': '4500',
+        'collection_number': '11001',
         'experiment': '',
-        'collection_comment': "Exploring generation count and size and carryover",
+        'collection_comment': "Various generation sizes and lengths solving coin_collector_15 with optimised hyperparameters",
     }
     
     # Iterating hyperparameter values.
     # This is exponential so do be careful with how many choices there are.
-
+    
     hyperparameter_ranges = {
-        'generations': [20, 100],
-        'size_new_generations': [20, 200],
-        'carryover_count': [0, 2, 10],
+        'generations': [500, 1000],
+        'size_new_generations': [30],
+        'carryover_count': [0],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
         'point_mutation_amount_max': [0.1],
         'point_mutation_scalar': [0.8],
-        'game': ['coin_collector_5'],
-        'steps_to_retain': [50],
+        'game': ['coin_collector_15'],
+        'steps_to_retain': [150],
         'fitness_bias_scalar': [0.25],
         'failed_step_reward': [-1],
         'valid_step_reward': [10],

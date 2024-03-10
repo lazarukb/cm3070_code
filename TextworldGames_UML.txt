@@ -1,0 +1,7 @@
+@startuml
+class TextworldGames {
+    get_game_path()
+    get_game_max_steps()
+        __init__()
+}
+@enduml

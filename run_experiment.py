@@ -77,25 +77,6 @@ if __name__ == "__main__":
     if confirm.lower() == 'n':
         print(f"Aborting at your request.")
         quit()
-    
-    # hyperparameter_ranges = {
-    #     'generations': [5],
-    #     'size_new_generations': [10],
-    #     'carryover_count': [12],
-    #     'point_mutation_chance': [0.3],
-    #     'point_mutation_amount': [0.35],
-    #     'point_mutation_chance_max': [0.75],
-    #     'point_mutation_amount_max': [0.5],
-    #     'point_mutation_scalar': [0.5],
-    #     'game': ['coin_collector_5'],
-    #     'steps_to_retain': [3],
-    #     'fitness_bias_scalar': [0],
-    #     'failed_step_reward': [-1],
-    #     'valid_step_reward': [1],
-    #     'force_random_choice': [False],
-    #     'force_pickup': [True],
-    #     'chain_rewards': [True]
-    # }
         
     # Modification loops to fill in the parameters for a single experiment.
     # Ignoring the 80 character line limit here to ensure this remains both

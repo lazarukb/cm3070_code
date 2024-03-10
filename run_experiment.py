@@ -41,25 +41,25 @@ if __name__ == "__main__":
     # Don't put commas in the comment!
     
     hyperparameters = {
-        'collection_number': '11001',
+        'collection_number': '0',
         'experiment': '',
-        'collection_comment': "Various generation sizes and lengths solving coin_collector_15 with optimised hyperparameters",
+        'collection_comment': "Demonstration video",
     }
     
     # Iterating hyperparameter values.
     # This is exponential so do be careful with how many choices there are.
     
     hyperparameter_ranges = {
-        'generations': [500, 1000],
-        'size_new_generations': [30],
-        'carryover_count': [0],
+        'generations': [10],
+        'size_new_generations': [20],
+        'carryover_count': [0, 2],
         'point_mutation_chance': [0.3],
         'point_mutation_amount': [0.35],
         'point_mutation_chance_max': [0.75],
         'point_mutation_amount_max': [0.1],
         'point_mutation_scalar': [0.8],
-        'game': ['coin_collector_15'],
-        'steps_to_retain': [150],
+        'game': ['coin_collector_5'],
+        'steps_to_retain': [50],
         'fitness_bias_scalar': [0.25],
         'failed_step_reward': [-1],
         'valid_step_reward': [10],
@@ -73,7 +73,11 @@ if __name__ == "__main__":
         
     # Confirmation, if case you accidentally queued too many experiments.
     
-    confirm = input(f"You've queued up {remaining_experiment_count} experiments, to be saved to collection folder {hyperparameters['collection_number']}. Enter 'n' to cancel, or just press enter to proceed. ")
+    confirm = input(f"You've queued up {remaining_experiment_count} " \
+        f"experiments, to be saved to collection folder " \
+        f"{hyperparameters['collection_number']}. Enter 'n' to cancel, " \
+        f"or just press enter to proceed. "
+        )
     if confirm.lower() == 'n':
         print(f"Aborting at your request.")
         quit()
@@ -130,7 +134,12 @@ if __name__ == "__main__":
                                                                     exper_elapsed = exper_end - exper_start
                                                                     remaining_experiment_count -= 1
                                                                     
-                                                                    print(f"Writing experiment {hyperparameters['experiment']} to the filesystem. That experiment took {exper_elapsed}, and there are {remaining_experiment_count} experiments left. Estimating {remaining_experiment_count * exper_elapsed} remaining.")
+                                                                    print(
+                                                                        f"Writing experiment {hyperparameters['experiment']} " \
+                                                                        f"to the filesystem. That experiment took {exper_elapsed}, " \
+                                                                        f"and there are {remaining_experiment_count} experiments left. "\
+                                                                        f"Estimating {remaining_experiment_count * exper_elapsed} remaining."
+                                                                        )
                                                                     
                                                                     max_fitness.append([hyperparameters['experiment'], avg_fit])
                                                                     cumulative['generations'] += hyperparameters['generations']
@@ -144,7 +153,16 @@ if __name__ == "__main__":
     end = datetime.datetime.now()
     cumulative['elapsed'] = end - start
     cumulative['unique_stamp'] = str(datetime.datetime.now().microsecond)
-    print(f"Total duration of the sim: {cumulative['elapsed']}, which is {cumulative['elapsed'] / cumulative['generations']} per generation, or approximately {cumulative['elapsed'] / cumulative['networks']} per network.")
+    print(
+        f"Total duration of the sim: {cumulative['elapsed']}, which is " \
+        f"{cumulative['elapsed'] / cumulative['generations']} per generation, " \
+        f"or approximately {cumulative['elapsed'] / cumulative['networks']} " \
+        f"per network."
+        )
     
-    reporting.Reporting.output_runtime_stats_to_csv(most_fit_folders, hyperparameters, cumulative)
+    reporting.Reporting.output_runtime_stats_to_csv(
+        most_fit_folders, 
+        hyperparameters, 
+        cumulative
+        )
     

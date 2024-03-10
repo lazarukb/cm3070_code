@@ -1,0 +1,2 @@
+collection_number,experiment,collection_comment,chain_rewards,force_pickup,force_random_choice,valid_step_reward,failed_step_reward,fitness_bias_scalar,steps_to_retain,game,point_mutation_scalar,point_mutation_amount_max,point_mutation_chance_max,point_mutation_amount,point_mutation_chance,max_population_size,size_new_generations,generations,
+4430,34.8.7126,Exploring mutation parameters 3,False,False,False,10,-1,0.25,50,coin_collector_15,0.5,0.1,0.75,0.35,0.1,55,50,20,

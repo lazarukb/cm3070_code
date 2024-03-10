@@ -1,0 +1,2 @@
+collection_number,experiment,collection_comment,chain_rewards,force_pickup,force_random_choice,valid_step_reward,failed_step_reward,fitness_bias_scalar,steps_to_retain,game,point_mutation_scalar,point_mutation_amount_max,point_mutation_chance_max,point_mutation_amount,point_mutation_chance,max_population_size,size_new_generations,generations,
+4001,41.14.4278,Hyperparameter exploration - chain false and both force true,False,True,True,10,-5,0,3,coin_collector_5,0.5,0.5,0.75,0.6,0.3,12,10,10,
